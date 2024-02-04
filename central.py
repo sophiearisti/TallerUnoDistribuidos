@@ -13,7 +13,7 @@ SERVER3 = "192.168.193.127"
 ADDRC = (SERVERC,PORT)
 ADDR1 = (SERVER1,PORT)
 ADDR2 = (SERVER2,PORT)
-ADDR3 = (SERVER3,PORT)
+ADDR3 = (SERVERC,6000)
 
 #binding the socket to the specific port/ip
 server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -37,7 +37,6 @@ def handle_client(conn, addr):
         
     num1 = msg["numero1"]
     num2 = msg["numero2"]
-    print(f"n1: {num1} n2: {num2}")
 
     #paso1
     enviar = json.dumps({"paso":1,"numero":num1})
@@ -68,10 +67,10 @@ def handle_client(conn, addr):
     calc3.send(enviar.encode(FORMAT))
     print(f"[ENVIADO] PASO 3| NUM1: {res1} NUM2: {res2} a {ADDR3}")
     res3 = calc3.recv(1024).decode(FORMAT)
-    res3 = float(res3) #Se convierte
     print(f"[RECIBIDO] Numero 2: {res3} de {ADDR3}")
 
     #enviar la respuesta al cliente
+    print(f"[ENVIADO] RESULTADO: {res3} a {addr}")
     conn.send(res3.encode(FORMAT))
 
     #Cerrar la conexion
