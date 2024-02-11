@@ -4,9 +4,9 @@ import json
 import math
 
 #Address and port information
-PORT = 6000
+PORT = 7000
 FORMAT = "utf-8"
-SERVER3 = "192.168.193.148"
+SERVER3 = "192.168.193.150"
 ADDR3 = (SERVER3,PORT)
 
 #binding the socket to the specific port/ip
