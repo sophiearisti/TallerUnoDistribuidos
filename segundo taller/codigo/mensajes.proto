@@ -1,0 +1,8 @@
+message Informacion {
+    optional int32 paso= paso;
+    optional int32 numero1= numero1;
+    optional  int32 numero2= numero2;
+}
+
+
+
