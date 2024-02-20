@@ -1,8 +1,28 @@
+syntax = "proto3";
+
+package unary;
+
+service Unary{
+  // A simple RPC.
+  //
+  // Obtains the MessageResponse at a given position.
+ rpc GetServerResponse(Message) returns (MessageResponse) {}
+
+}
+
+syntax= "proto3";
+
 message Informacion {
     optional int32 paso= paso;
     optional int32 numero1= numero1;
     optional  int32 numero2= numero2;
 }
 
+message Message{
+ string message = 1;
+}
 
-
+message MessageResponse{
+ string message = 1;
+ bool received = 2;
+}
