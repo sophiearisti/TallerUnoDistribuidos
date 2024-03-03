@@ -23,39 +23,15 @@ class ServerHandler(client_pb2_grpc.ClientServicer):
         client_reply = client_pb2.ClientReply()
         # pedir primer cateto al cuadrado
         print(f"[Peticion] Server OP1 cateto: {request.cateto1}")
-        try:
-            cateto1 = self.stub.pedir_primer_cateto_cuadrado(request.cateto1, timeout = 2)
-        except _Rendezvous as err:
-            if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
-                print("[Timeout] Server OP1")
-                cateto1 = pow(request.cateto1,2)
-            else:
-                print("[Error] " + err)
-                cateto1 = pow(request.cateto1,2)
+        cateto1 = pedir_primer_cateto_cuadrado(request.cateto1)
 
         # pedir segundo cateto al cuadrado
         print(f"[Peticion] Server OP2 cateto: {request.cateto2}")
-        try:
-            cateto2 = self.stub.pedir_segundo_cateto_cuadrado(request.cateto2, timeout = 2)
-        except _Rendezvous as err:
-            if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
-                print("[Timeout] Server OP2")
-                cateto2 = pow(request.cateto2,2)
-            else:
-                print("[Error] " + err)
-                cateto2 = pow(request.cateto2,2)
+        cateto2 = pedir_segundo_cateto_cuadrado(request.cateto2)
 
         # pedir hipotenusa
         print(f"[Peticion] Server OP3 catetos: (catetoA: {cateto1} catetoB: {cateto2})")
-        try:
-            hipotenusa = self.stub.pedir_hipotenusa(cateto1,cateto2, timeout = 2)
-        except _Rendezvous as err:
-            if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
-                print("[Timeout] Server OP3")
-                cateto2 = pow(cateto1 + cateto2,0.5)
-            else:
-                print("[Error] " + err)
-                cateto2 = pow(cateto1 + cateto2,0.5)
+        hipotenusa = pedir_hipotenusa(cateto1,cateto2)
         
         #preparar response hipotenusa
         client_reply.hipotenusa = hipotenusa
@@ -69,9 +45,22 @@ def pedir_primer_cateto_cuadrado(cateto: float) -> float:
     ) as channel:
         stub = op1_pb2_grpc.Op1Stub(channel)
         server_req = op1_pb2.Op1Request(cateto1=cateto)
-        response = stub.Operation1(server_req)
-        print(f"Response: {response.cateto1}")
-        return response.cateto1 
+        
+        try:
+            response = stub.Operation1(server_req, timeout = 2)
+            print(f"Response: {response.cateto1}")
+            return response.cateto1 
+        except _Rendezvous as err:
+            if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
+                print("[Timeout] Server OP1")
+                cateto1 = pow(cateto,2)
+                return cateto1 
+            else:
+                print("[Error] " + err)
+                cateto1 = pow(cateto,2)
+                return cateto1
+        
+    
 
 #funcion grpc del op2
 def pedir_segundo_cateto_cuadrado(cateto: float) -> float:
