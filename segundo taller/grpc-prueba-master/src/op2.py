@@ -8,7 +8,7 @@ from grpc_config import op2_pb2, op2_pb2_grpc
 
 class OP2Handler(op2_pb2_grpc.Op2Servicer):
 
-    def Operation1(self, request, context):
+    def Operation2(self, request, context):
         op2_reply = op2_pb2.Op2Reply()
 
         op2_reply.cateto2 = request.cateto2**2

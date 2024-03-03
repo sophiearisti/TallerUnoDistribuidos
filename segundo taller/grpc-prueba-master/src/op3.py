@@ -8,7 +8,7 @@ from grpc_config import op3_pb2, op3_pb2_grpc
 
 class OP3Handler(op3_pb2_grpc.Op3Servicer):
 
-    def Operation1(self, request, context):
+    def Operation3(self, request, context):
         op3_reply = op3_pb2.Op3Reply()
 
         op3_reply.hipotenusa = pow(request.cateto1 + request.cateto2,0.5)
