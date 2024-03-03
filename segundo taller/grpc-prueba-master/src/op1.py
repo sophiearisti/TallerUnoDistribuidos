@@ -10,9 +10,9 @@ class OP1Handler(op1_pb2_grpc.Op1Servicer):
 
     def Operation1(self, request, context):
         op1_reply = op1_pb2.Op1Reply()
-
+        print(f"Operacion recibida, valor del cateto: {request.cateto1}")
         op1_reply.cateto1 = request.cateto1**2
-
+        print(f"Respuesta a enviar {request.cateto1**2}")
         return op1_reply
 
 

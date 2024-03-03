@@ -10,9 +10,9 @@ class OP3Handler(op3_pb2_grpc.Op3Servicer):
 
     def Operation3(self, request, context):
         op3_reply = op3_pb2.Op3Reply()
-
+        print(f"Operacion recibida, valor de los catetos: c1: {request.cateto1}, c2: {request.cateto2}")
         op3_reply.hipotenusa = pow(request.cateto1 + request.cateto2,0.5)
-
+        print(f"Respuesta a enviar {pow(request.cateto1 + request.cateto2,0.5)}")
         return op3_reply
 
 
