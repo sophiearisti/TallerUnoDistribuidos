@@ -2,8 +2,8 @@ SERVER_PORT = 5000
 OP1_PORT = 5001
 OP2_PORT = 5002
 OP3_PORT = 5003
-
-SERVER_HOST = "localhost"
-OP1_HOST = "localhost"
+#192.168.193.126
+SERVER_HOST = "192.168.193.148" #K
+OP1_HOST = "192.168.193.148"    #K
 OP2_HOST = "localhost"
 OP3_HOST = "localhost"
