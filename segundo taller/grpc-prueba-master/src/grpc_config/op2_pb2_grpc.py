@@ -16,7 +16,7 @@ class Op2Stub(object):
             channel: A grpc.Channel.
         """
         self.Operation2 = channel.unary_unary(
-                '/op1.Op2/Operation2',
+                '/op2.Op2/Operation2',
                 request_serializer=op2__pb2.Op2Request.SerializeToString,
                 response_deserializer=op2__pb2.Op2Reply.FromString,
                 )
@@ -42,7 +42,7 @@ def add_Op2Servicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'op1.Op2', rpc_method_handlers)
+            'op2.Op2', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -62,7 +62,7 @@ class Op2(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/op1.Op2/Operation2',
+        return grpc.experimental.unary_unary(request, target, '/op2.Op2/Operation2',
             op2__pb2.Op2Request.SerializeToString,
             op2__pb2.Op2Reply.FromString,
             options, channel_credentials,

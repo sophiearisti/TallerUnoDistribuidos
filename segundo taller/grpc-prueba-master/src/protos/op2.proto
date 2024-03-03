@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package op1;
+package op2;
 
 // servicio op2
 service Op2 {
