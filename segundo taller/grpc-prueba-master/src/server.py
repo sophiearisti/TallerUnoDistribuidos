@@ -44,7 +44,7 @@ class ServerHandler(client_pb2_grpc.ClientServicer):
 
     def obtener_cateto1(self, cateto):
         try:
-            response = self.stub_op1.Operation1(op1_pb2.Op1Request(cateto1=cateto))
+            response = self.stub_op1.Operation1(op1_pb2.Op1Request(cateto1=cateto), timeout=2)
             print(f"[Response] OP1: {response.cateto1}")
             return response.cateto1
         except grpc.RpcError as err:
@@ -53,7 +53,7 @@ class ServerHandler(client_pb2_grpc.ClientServicer):
 
     def obtener_cateto2(self, cateto):
         try:
-            response = self.stub_op2.Operation2(op2_pb2.Op2Request(cateto2=cateto))
+            response = self.stub_op2.Operation2(op2_pb2.Op2Request(cateto2=cateto), timeout=2)
             print(f"[Respuestta] OP2: {response.cateto2}")
             return response.cateto2
         except grpc.RpcError as err:
@@ -62,7 +62,7 @@ class ServerHandler(client_pb2_grpc.ClientServicer):
 
     def obtener_hipotenusa(self, cateto1, cateto2):
         try:
-            response = self.stub_op3.Operation3(op3_pb2.Op3Request(cateto1=cateto1, cateto2=cateto2))
+            response = self.stub_op3.Operation3(op3_pb2.Op3Request(cateto1=cateto1, cateto2=cateto2), timeout=2)
             print(f"[Respuesta] OP3: {response.hipotenusa}")
             return response.hipotenusa
         except grpc.RpcError as err:
