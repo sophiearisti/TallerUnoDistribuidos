@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package client;
+
+// servicio cliente
+service Client {
+	rpc RequestOperation (ClientRequest) returns (ClientReply);
+}
+
+// mensaje solicitud
+message ClientRequest {
+  float cateto1 = 1;
+  float cateto2 = 2;
+}
+
+// mensaje respuesta
+message ClientReply {
+  float hipotenusa = 1;
+}

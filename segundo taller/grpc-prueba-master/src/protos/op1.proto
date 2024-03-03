@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package op1;
+
+// servicio op1
+service Op1 {
+	rpc Operation1 (Op1Request) returns (Op1Reply);
+}
+
+// mensaje solicitud
+message Op1Request {
+  float cateto1 = 1;
+}
+
+// mensaje respuesta
+message Op1Reply {
+  float cateto1 = 1;
+}
