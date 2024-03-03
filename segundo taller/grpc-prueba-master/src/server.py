@@ -24,6 +24,7 @@ class ServerHandler(client_pb2_grpc.ClientServicer):
         cateto1 = pedir_primer_cateto_cuadrado(request.cateto1)
         # pedir segundo cateto al cuadrado
         cateto2 = pedir_segundo_cateto_cuadrado(request.cateto2)
+        print(cateto2)
         # pedir hipotenusa
         hipotenusa = pedir_hipotenusa(request.cateto1, request.cateto2)
         # calcular hipotenusa

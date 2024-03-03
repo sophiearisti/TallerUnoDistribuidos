@@ -6,7 +6,7 @@ from constants import environment
 from grpc_config import op2_pb2, op2_pb2_grpc
 
 
-class OP2Handler(op2_pb2_grpc.Op1Servicer):
+class OP2Handler(op2_pb2_grpc.Op2Servicer):
 
     def Operation1(self, request, context):
         op2_reply = op2_pb2.Op2Reply()
