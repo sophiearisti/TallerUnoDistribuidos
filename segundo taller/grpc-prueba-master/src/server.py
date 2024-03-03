@@ -20,12 +20,15 @@ class ServerHandler(client_pb2_grpc.ClientServicer):
     def RequestOperation(self, request, context):
         client_reply = client_pb2.ClientReply()
         # pedir primer cateto al cuadrado
-
+        print(f"[Peticion] Server OP1 cateto: {request.cateto1}")
         cateto1 = pedir_primer_cateto_cuadrado(request.cateto1)
+        
         # pedir segundo cateto al cuadrado
+        print(f"[Peticion] Server OP2 cateto: {request.cateto2}")
         cateto2 = pedir_segundo_cateto_cuadrado(request.cateto2)
-        print(cateto2)
+        
         # pedir hipotenusa
+        print(f"[Peticion] Server OP3 catetos( A: {cateto1} B: {cateto2}")
         hipotenusa = pedir_hipotenusa(request.cateto1, request.cateto2)
         # calcular hipotenusa
         client_reply.hipotenusa = hipotenusa
