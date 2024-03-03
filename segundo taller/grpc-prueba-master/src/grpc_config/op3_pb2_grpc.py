@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import op3_pb2 as op3__pb2
+from . import op3_pb2 as op3__pb2
 
 
 class Op3Stub(object):
