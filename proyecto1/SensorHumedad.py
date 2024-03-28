@@ -1,6 +1,7 @@
 import time
 import random
 from Sensor import Sensor
+from constants import environment
 
 class SensorHumedad(Sensor):
 
@@ -12,18 +13,27 @@ class SensorHumedad(Sensor):
         super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores)
 
     def obtenerMuestra(self):
-        return random.uniform(11, 29.4)
+        probability = random.random()
+
+        if probability < self.prob_correctos:
+            return "{:.1f}".format(random.uniform(self.min, self.max))
+
+        elif probability < self.prob_correctos + self.prob_fuera_rango:
+            return "{:.1f}".format(random.uniform(-0.1, self.min)-0.1)
+        
+        else:
+            return "{:.1f}".format(random.uniform(-self.min, 0)-0.1)
 
 
     def generarValores(self):
 
         self.sender_proxy.connect(f"tcp://{self.ip_proxy}:5558")
 
-        print("ENCENDIENDO...")
+        print(f"ENCENDIENDO SENSOR HUMEDAD CON PID {self.pid}...")
 
         while True:
             
-            muestra = self.obtenerMuestra()
+            muestra = float(self.obtenerMuestra())
 
             tipo_mensaje = self.enRango(muestra)
 
@@ -32,7 +42,7 @@ class SensorHumedad(Sensor):
 
             result = { 'tipo_sensor' : self.tipo,'tipo_mensaje' : tipo_mensaje, 'valor' : muestra, 'TS': time.time()}
 
-            print(f"ENVIADO MENSAJE {self.tipo}: tipo_mensaje {tipo_mensaje} valor {muestra}")
+            print(f"ENVIADO MENSAJE {self.tipo} CON PID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}")
             
             self.sender_proxy.send_json(result)
 
@@ -41,6 +51,8 @@ class SensorHumedad(Sensor):
     def enRango(self,muestra):
         if(muestra>self.min and muestra<self.max):
             return "Muestra"
+        elif (muestra<0):
+            return "Error"
         else:
             return"Alerta"
         

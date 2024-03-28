@@ -1,5 +1,5 @@
 import zmq
-
+from constants import environment
 
 class Proxy:
 
@@ -7,10 +7,7 @@ class Proxy:
 
     ip_cloud = ""
     ip_SC = ""
-    ip_propia = "192.168.193.126"
-    #ip_propia = "192.168.193.79"
-    #sender_SC = context.socket(zmq.REQ)
-    #sender_Cloud = context.socket(zmq.REQ)
+    ip_propia = "192.168.193.79"
 
     def inicializar(self):
 
@@ -25,46 +22,51 @@ class Proxy:
             print("RECIBIENDO MENSAJES...")
             result = receiver.recv_json()
             print(f"resultado recibido: {result}")
-            
-            if(self.validar(result)):
+
+            if self.validar(result):
                 print("VALORES CORRECTOS")
             else:
                 print("VALORES INCORRECTOS")
-            
 
     def validar(self, result):
-        if(result['tipo_sensor']=="humo"):
+        tipo_sensor = result["tipo_sensor"]
+        valor = result["valor"]
+        tipo_mensaje = result["tipo_mensaje"]
 
-            if(result['tipo_mensaje']=="Muestra" and self.enRangoHumo(result['muestra'])):
-                return True
+        if tipo_sensor == "humo":
+            return self.enRangoHumo(valor, tipo_mensaje)
+        elif tipo_sensor in ["humedad", "temperatura"]:
+            return self.enRango(valor, *self.rangos[tipo_sensor], tipo_mensaje)
+        else:
+            return False
 
-        elif(result['tipo_sensor']=="humedad"):
-            if(result['tipo_mensaje']=="Muestra" and self.enRango(result['muestra'], self.rangos['humedad'][0], self.rangos['humedad'][1])):
-                return True
-
-        else: #es temperatura
-            if(result['tipo_mensaje']=="Muestra" and self.enRango(result['muestra'], self.rangos['temperatura'][0], self.rangos['temperatura'][1])):
-                return True
-        
-        return False
-
-    def enRango(self,muestra, min, max):
-        if(muestra>min and muestra<max):
+    def enRango(self, muestra, min, max, tipo_mensaje):
+        if min <= muestra <= max and tipo_mensaje == "Muestra":
+            return True
+        elif muestra < 0 and tipo_mensaje == "Error":
+            return True
+        elif muestra not in [False, True] and tipo_mensaje == "Alerta":
             return True
         else:
             return False
-    
-    def enRangoHumo(self,muestra):
-        if(muestra==False):
+
+    def enRangoHumo(self, muestra, tipo_mensaje):
+        if muestra is False and tipo_mensaje == "Muestra":
+            return True
+        elif muestra is True and tipo_mensaje == "Alerta":
+            return True
+        elif muestra is None and tipo_mensaje == "Error":
             return True
         else:
             return False
+
 
 def main():
     # Crear una instancia del proxy
     proxy = Proxy()
     # Inicializar el proxy
     proxy.inicializar()
+
 
 if __name__ == "__main__":
     main()

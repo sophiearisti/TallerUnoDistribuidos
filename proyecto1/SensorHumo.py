@@ -1,26 +1,35 @@
 import time
 import random
 from Sensor import Sensor
-
-
+from constants import environment
 
 class SensorHumo(Sensor):
 
     max=True
     min=False
-    tiempo=5
+    tiempo=3
 
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores)
 
     def obtenerMuestra(self):
-        return random.uniform(11, 29.4)
+        probability = random.random()
 
+        if probability < self.prob_errores:
+            return None
+
+        else:
+            probability = random.random()
+            if probability < 0.5:
+                return self.max
+            else:
+                return self.min
+        
     def generarValores(self):
 
         self.sender_proxy.connect(f"tcp://{self.ip_proxy}:5558")
 
-        print("ENCENDIENDO...")
+        print(f"ENCENDIENDO SENSOR HUMO CON PID {self.pid}...")
 
         while True:
             
@@ -33,7 +42,7 @@ class SensorHumo(Sensor):
 
             result = { 'tipo_sensor' : self.tipo,'tipo_mensaje' : tipo_mensaje, 'valor' : muestra}
 
-            print(f"ENVIADO MENSAJE {self.tipo}: tipo_mensaje {tipo_mensaje} valor {muestra}")
+            print(f"ENVIADO MENSAJE {self.tipo} CON PID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}")
             
             self.sender_proxy.send_json(result)
 
@@ -42,8 +51,10 @@ class SensorHumo(Sensor):
     def enRango(self,muestra):
         if(muestra==self.min):
             return "Muestra"
-        else:
+        elif(muestra==self.max):
             return"Alerta"
+        else:
+            return "Error"
         
     def generarAlerta(self,muestra):
         print("generar alerta al sistema de calidad")
