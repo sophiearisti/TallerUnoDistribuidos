@@ -1,3 +1,5 @@
+from abc import abstractmethod
+from constants import environment
 import zmq
 import os
 import random
@@ -5,8 +7,8 @@ import random
 class Sensor:
 
     
-    ip_proxy = "192.168.193.79"
-    ip_SC=""
+    ip_proxy = environment.IP_PROXY
+    ip_SC=environment.IP_SC_EDGE
     context = zmq.Context()
     sender_proxy = context.socket(zmq.PUSH)
     sender_SC = context.socket(zmq.REQ)
@@ -20,5 +22,18 @@ class Sensor:
 
     def generarAlerta(self,muestra):
         print("generar alerta al sistema de calidad")
+
+    @abstractmethod
+    def obtenerMuestra(self):
+        pass
+
+    @abstractmethod
+    def generarValores(self):
+        pass
+
+    @abstractmethod
+    def enRango(self,muestra):
+        pass
+
 
  

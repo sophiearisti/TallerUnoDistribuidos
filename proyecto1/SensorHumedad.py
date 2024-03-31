@@ -1,13 +1,15 @@
-import time
 import random
-from Sensor import Sensor
+import time
+
 from constants import environment
+from Sensor import Sensor
+
 
 class SensorHumedad(Sensor):
 
-    max=100
-    min=70
-    tiempo=5
+    max = environment.MAX_HUMEDAD
+    min = environment.MIN_HUMEDAD
+    tiempo = environment.TIEMPO_HUMEDAD
 
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores)
@@ -19,40 +21,45 @@ class SensorHumedad(Sensor):
             return "{:.1f}".format(random.uniform(self.min, self.max))
 
         elif probability < self.prob_correctos + self.prob_fuera_rango:
-            return "{:.1f}".format(random.uniform(-0.1, self.min)-0.1)
-        
-        else:
-            return "{:.1f}".format(random.uniform(-self.min, 0)-0.1)
+            return "{:.1f}".format(random.uniform(-0.1, self.min) - 0.1)
 
+        else:
+            return "{:.1f}".format(random.uniform(-self.min, 0) - 0.1)
 
     def generarValores(self):
 
         self.sender_proxy.connect(f"tcp://{self.ip_proxy}:5558")
 
-        print(f"ENCENDIENDO SENSOR HUMEDAD CON PID {self.pid}...")
+        print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
 
         while True:
-            
+
             muestra = float(self.obtenerMuestra())
 
             tipo_mensaje = self.enRango(muestra)
 
-            if(tipo_mensaje=="Alerta"):
+            if tipo_mensaje == environment.TIPO_RESULTADO_ALERTA:
                 self.generarAlerta(muestra)
 
-            result = { 'tipo_sensor' : self.tipo,'tipo_mensaje' : tipo_mensaje, 'valor' : muestra, 'TS': time.time()}
+            result = {
+                "tipo_sensor": self.tipo,
+                "tipo_mensaje": tipo_mensaje,
+                "valor": muestra,
+                "TS": time.time(),
+            }
 
-            print(f"ENVIADO MENSAJE {self.tipo} CON PID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}")
-            
+            print(
+                f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}"
+            )
+
             self.sender_proxy.send_json(result)
 
             time.sleep(self.tiempo)
 
-    def enRango(self,muestra):
-        if(muestra>self.min and muestra<self.max):
-            return "Muestra"
-        elif (muestra<0):
-            return "Error"
+    def enRango(self, muestra):
+        if muestra > self.min and muestra < self.max:
+            return environment.TIPO_RESULTADO_MUESTRA
+        elif muestra < 0:
+            return environment.TIPO_RESULTADO_ERROR
         else:
-            return"Alerta"
-        
+            return environment.TIPO_RESULTADO_ALERTA

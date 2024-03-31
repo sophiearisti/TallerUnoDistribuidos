@@ -33,7 +33,7 @@ class SensorTemperatura(Sensor):
 
         self.sender_proxy.connect(f"tcp://{self.ip_proxy}:5558")
 
-        print(f"ENCENDIENDO SENSOR TEMPERATURA CON PID {self.pid}...")
+        print(f"ENCENDIENDO SENSOR TEMPERATURA CON ID {self.pid}...")
 
         while True:
             
@@ -41,12 +41,12 @@ class SensorTemperatura(Sensor):
 
             tipo_mensaje = self.enRango(muestra)
 
-            if(tipo_mensaje=="Alerta"):
+            if(tipo_mensaje==environment.TIPO_RESULTADO_ALERTA):
                 self.generarAlerta(muestra)
 
             result = { 'tipo_sensor' : self.tipo,'tipo_mensaje' : tipo_mensaje, 'valor' : muestra}
 
-            print(f"ENVIADO MENSAJE {self.tipo} CON PID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}")
+            print(f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}")
             
             self.sender_proxy.send_json(result)
 
@@ -54,8 +54,8 @@ class SensorTemperatura(Sensor):
 
     def enRango(self,muestra):
         if(muestra>self.min and muestra<self.max):
-            return "Muestra"
+            return environment.TIPO_RESULTADO_MUESTRA
         elif (muestra<0):
-            return "Error"
+            return environment.TIPO_RESULTADO_ERROR
         else:
-            return"Alerta"
+            return environment.TIPO_RESULTADO_ALERTA
