@@ -1,8 +1,8 @@
 import random
 import time
-
 from constants import environment
 from Sensor import Sensor
+from datetime import datetime
 
 
 class SensorHumedad(Sensor):
@@ -41,15 +41,17 @@ class SensorHumedad(Sensor):
             if tipo_mensaje == environment.TIPO_RESULTADO_ALERTA:
                 self.generarAlerta(muestra)
 
+            timestamp = time.time()
             result = {
                 "tipo_sensor": self.tipo,
                 "tipo_mensaje": tipo_mensaje,
                 "valor": muestra,
                 "TS": time.time(),
+                "id": self.pid
             }
 
             print(
-                f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra}"
+                f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra} tiempo {datetime.fromtimestamp(timestamp)}"
             )
 
             self.sender_proxy.send_json(result)

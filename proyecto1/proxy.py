@@ -1,18 +1,24 @@
 import zmq
-from constants import environment
+from datetime import datetime
 
 class Proxy:
-
     rangos = {"humedad": (70, 100), "temperatura": (11, 29.4), "humo": (True, False)}
-
     ip_cloud = ""
     ip_SC = ""
     ip_propia = "192.168.193.79"
 
-    def inicializar(self):
+    colors = {
+        'Error': '\033[93m',    # Yellow
+        'Muestra': '\033[92m',  # Green
+        'Alerta': '\033[91m',   # Red
+    }
+    reset_color = '\033[0m'
 
+    def get_color(self, tipo_mensaje):
+        return self.colors.get(tipo_mensaje, '')
+
+    def inicializar(self):
         context = zmq.Context()
-        # Socket to receive messages on
         receiver = context.socket(zmq.PULL)
         receiver.bind(f"tcp://{self.ip_propia}:5558")
 
@@ -21,7 +27,9 @@ class Proxy:
         while True:
             print("RECIBIENDO MENSAJES...")
             result = receiver.recv_json()
-            print(f"resultado recibido: {result}")
+
+            color = self.get_color(result['tipo_mensaje'])
+            print(f"HORA:\t {datetime.fromtimestamp(result['TS'])}\tSENSOR:\t{result['tipo_sensor']}\tID:\t{result['id']}\tVALOR:\t{result['valor']}\tTIPO MENSAJE\t{color}{result['tipo_mensaje']}{self.reset_color}")
 
             if self.validar(result):
                 print("VALORES CORRECTOS")
@@ -60,13 +68,9 @@ class Proxy:
         else:
             return False
 
-
 def main():
-    # Crear una instancia del proxy
     proxy = Proxy()
-    # Inicializar el proxy
     proxy.inicializar()
-
 
 if __name__ == "__main__":
     main()

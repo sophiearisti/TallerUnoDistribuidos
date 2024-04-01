@@ -1,12 +1,10 @@
 from abc import abstractmethod
 from constants import environment
 import zmq
-import os
-import random
 
 class Sensor:
 
-    
+    id_Contador=0
     ip_proxy = environment.IP_PROXY
     ip_SC=environment.IP_SC_EDGE
     context = zmq.Context()
@@ -18,7 +16,9 @@ class Sensor:
         self.prob_correctos = prob_correctos
         self.prob_fuera_rango = prob_fuera_rango
         self.prob_errores = prob_errores
-        self.pid ="{:.1f}".format(os.getpid()+random.uniform(0,10000))
+        # Incrementar el contador
+        Sensor.id_Contador += 1
+        self.pid = Sensor.id_Contador
 
     def generarAlerta(self,muestra):
         print("generar alerta al sistema de calidad")
