@@ -5,7 +5,7 @@ import socket
 from math import sqrt
 
 FORMAT = "utf-8"
-mqttBroker = "broker.hivemq.com"
+mqttBroker = "mqtt.eclipseprojects.io"
 ipCliente = ""
 json_data = {}
 received_cateto1 = False; received_cateto2 = False; hipotenusa_mandado = False; peticion_recibida = False
@@ -59,7 +59,7 @@ def on_message_hipotenusa(client, userdata, message):
 print("[ENCENDIENDO] SERVIDOR CENTRAL")
 
 # Crear un cliente MQTT
-client = mqtt.Client(2, "CENTRAL")
+client = mqtt.Client(2, ipCentral)
 client.connect(mqttBroker)
 
 # Definición de los callbacks
