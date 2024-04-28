@@ -22,7 +22,7 @@ numero1 = input("Ingresa el valor del primer cateto:")
 numero2 = input("Ingresa el valor del segundo cateto:")
 
 # Crear un cliente MQTT
-client = mqtt.Client(2, "CLIENTE")
+client = mqtt.Client(2, ipCliente)
 client.connect(mqttBroker)
 
 #Convertir y mandar valores

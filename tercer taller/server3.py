@@ -2,9 +2,11 @@ from math import sqrt
 import paho.mqtt.client as mqtt
 import time
 import json
+import socket
 
 FORMAT = "utf-8"
 mqttBroker = "broker.hivemq.com"
+ipServidor = socket.gethostbyname(socket.gethostname())
 
 def on_message(client, userdata, message):
     print(f"Recibido: {message.payload.decode('utf-8')} del tema {message.topic}")
@@ -15,7 +17,7 @@ def on_message(client, userdata, message):
 
 print("[ENCENDIENDO] SERVIDOR CALCULO3")
 # Crear un cliente MQTT
-client = mqtt.Client(2,"HIPOTENUSA")
+client = mqtt.Client(2,ipServidor+"S3")
 client.connect(mqttBroker)
 
 try:
