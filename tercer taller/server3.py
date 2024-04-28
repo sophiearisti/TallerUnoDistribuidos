@@ -10,7 +10,7 @@ def on_message(client, userdata, message):
     print(f"Recibido: {message.payload.decode('utf-8')} del tema {message.topic}")
     json_data = json.loads(message.payload.decode(FORMAT))
     hipotenusa = sqrt(float(json_data["cateto1"])+float(json_data["cateto2"]))
-    client.publish("RESPUESTA_HIPOTENUSA", hipotenusa)
+    client.publish(json_data["tema"], hipotenusa)
     print(f"Enviado: {hipotenusa} al tema RESPUESTA_HIPOTENUSA")
 
 print("[ENCENDIENDO] SERVIDOR CALCULO3")

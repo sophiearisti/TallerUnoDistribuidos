@@ -1,6 +1,7 @@
 import time
 import paho.mqtt.client as mqtt
 import json
+import socket
 from math import sqrt
 
 FORMAT = "utf-8"
@@ -9,6 +10,7 @@ ipCliente = ""
 json_data = {}
 received_cateto1 = False; received_cateto2 = False; hipotenusa_mandado = False; peticion_recibida = False
 cateto1 = 0.0; cateto2 = 0.0; timeout = 5; start_time = 0
+ipCentral = socket.gethostbyname(socket.gethostname())
 
 # Definición de qué hacer si llega una petición
 def on_message_peticion(client, userdata, message):
@@ -23,9 +25,9 @@ def on_message_peticion(client, userdata, message):
     peticion_recibida = True
     start_time = time.time()
     
-    # Mandar el mensaje a los temas correspondientes
-    client.publish("CATETO1", json_data["numero1"])
-    client.publish("CATETO2", json_data["numero2"])
+    # Mandar el mensaje a los temas correspondientes1
+    client.publish("CATETO1", json.dumps({"numero1": json_data["numero1"], "tema": ipCentral + "C1"}))
+    client.publish("CATETO2", json.dumps({"numero2": json_data["numero2"], "tema": ipCentral + "C2"}))
     ipCliente = json_data["ip"]
     print(f"Enviado: {json_data['numero1']} al tema CATETO1")
     print(f"Enviado: {json_data['numero2']} al tema CATETO2")
@@ -62,18 +64,18 @@ client.connect(mqttBroker)
 
 # Definición de los callbacks
 client.message_callback_add("PETICION", on_message_peticion)
-client.message_callback_add("RESPUESTA_CATETO1", on_message_cateto1)
-client.message_callback_add("RESPUESTA_CATETO2", on_message_cateto2)
-client.message_callback_add("RESPUESTA_HIPOTENUSA", on_message_hipotenusa)
+client.message_callback_add(ipCentral + "C1", on_message_cateto1)
+client.message_callback_add(ipCentral + "C2", on_message_cateto2)
+client.message_callback_add(ipCentral + "H", on_message_hipotenusa)
 
 # Bucle de eventos del cliente MQTT
 client.loop_start()
 
 # Suscribirse a los temas relevantes
 client.subscribe("PETICION")
-client.subscribe("RESPUESTA_CATETO1")
-client.subscribe("RESPUESTA_CATETO2")
-client.subscribe("RESPUESTA_HIPOTENUSA")
+client.subscribe(ipCentral + "C1")
+client.subscribe(ipCentral + "C2")
+client.subscribe(ipCentral + "H")
 
 # Mantener el script en ejecución
 try:
@@ -83,7 +85,7 @@ try:
     while True:
         time.sleep(1)
         if received_cateto1 and received_cateto2:
-            client.publish("HIPOTENUSA", json.dumps({"cateto1": cateto1, "cateto2": cateto2}))
+            client.publish("HIPOTENUSA", json.dumps({"cateto1": cateto1, "cateto2": cateto2, "tema": ipCentral + "H"}))
             print(f"Enviado: {cateto1} y {cateto2} al tema HIPOTENUSA")
             received_cateto1 = False; received_cateto2 = False
         # Verificar si ha ocurrido un timeout y no se ha enviado la hipotenusa
