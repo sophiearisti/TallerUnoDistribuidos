@@ -1,44 +1,26 @@
-import socket
-import threading
-import json
+import paho.mqtt.client as mqtt
+import time
 
-#Address and port information
-PORT = 7000
 FORMAT = "utf-8"
-SERVER2 = "192.168.193.79"
-ADDR2 = (SERVER2,PORT)
+mqttBroker = "mqtt.eclipseprojects.io"
 
-#binding the socket to the specific port/ip
-server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-server.bind(ADDR2)
+def on_message(client, userdata, message):
+    print(f"Recibido: {message.payload.decode('utf-8')} del tema {message.topic}")
+    client.publish("RESPUESTA_CATETO2", pow(float(message.payload.decode('utf-8')),2))
+    print(f"Enviado: {pow(float(message.payload.decode('utf-8')),2)} al tema RESPUESTA_CATETO2")
 
-def start( ):
-    server.listen()
-    print(f"[ESCUCHANDO] Servidor escuchando en {SERVER2}")
+print("[ENCENDIENDO] SERVIDOR CALCULO2")
+# Crear un cliente MQTT
+client = mqtt.Client(2,"CALCULO2")
+client.connect(mqttBroker)
+
+try:
     while True:
-        conn, addr = server.accept()
-        thread = threading.Thread(target = handle_client, args = (conn,addr))
-        thread.start()
-        print(f"[CONEXIONES ACTIVAS]  {threading.active_count() -1}")
+        client.loop_start()
+        client.subscribe("CATETO2")
+        client.on_message = on_message
+        time.sleep(1)
 
-
-def handle_client(conn, addr):
-    print(f"[CONEXION NUEVA] {addr} conectado.")
-
-    msg = json.loads(conn.recv(1024))    
-    print(f"[{addr}] {msg}")
-        
-    paso = msg["paso"]
-    num = msg["numero"]
-
-    print(f"PASO: {paso} NUMERO: {num}")
-    num = float(num)
-    cuadrado = str(pow(num, 2))
-
-    conn.send(cuadrado.encode(FORMAT))
-    print(f"[ENVIADO] {cuadrado}")
-    conn.close()
-
-print("[ENCENDIENDO] SERVIDOR CALCULO 2")
-start( )
-
+except KeyboardInterrupt:
+    client.disconnect()
+    client.loop_stop()

@@ -1,112 +1,99 @@
-import socket
-import json
-import math
-import json
 import time
 import paho.mqtt.client as mqtt
+import json
+from math import sqrt
 
-#Address and port information
-PORT = 7000
 FORMAT = "utf-8"
-
-SERVERC = "192.168.193.148" #COMPU KEVIN
-SERVER1 = "192.168.193.144" #COMPU LUISA
-SERVER2 = "192.168.193.79"  #COMPU DANIEL
-SERVER3 = "192.168.193.150" #VIRTUAL SOPHIA
-# "192.168.193.127" VIRTUAL ALANIS (CLIENTE)}  
-  
 mqttBroker = "mqtt.eclipseprojects.io"
-LOCALHOST = socket.gethostbyname(socket.gethostname())
+ipCliente = ""
+json_data = {}
+received_cateto1 = False; received_cateto2 = False; hipotenusa_mandado = False; peticion_recibida = False
+cateto1 = 0.0; cateto2 = 0.0; timeout = 5; start_time = 0
 
-def on_message(client, userdata, message):
-    print("Mensaje recibido en el tema:", message.topic)
-    print("Contenido del mensaje:", str(message.payload.decode("utf-8")))
+# Definición de qué hacer si llega una petición
+def on_message_peticion(client, userdata, message):
+    global ipCliente, json_data, received_cateto1, received_cateto2, hipotenusa_mandado, peticion_recibida, start_time
+    print(f"Mensaje recibido: {message.payload.decode(FORMAT)} del tema {message.topic}")
+    # Decodificar el mensaje JSON
+    json_data = json.loads(message.payload.decode(FORMAT))
+    # Resetear estado para una nueva petición
+    received_cateto1 = False
+    received_cateto2 = False
+    hipotenusa_mandado = False
+    peticion_recibida = True
+    start_time = time.time()
     
-    # Decodificar el JSON recibido
-    json_data = json.loads(message.payload.decode("utf-8"))
-    
-    # Obtener la respuesta del JSON
-    numero1 = json_data["numero1"]
-    numero2 = json_data["numero2"]
-    topic=json_data["topic"]
+    # Mandar el mensaje a los temas correspondientes
+    client.publish("CATETO1", json_data["numero1"])
+    client.publish("CATETO2", json_data["numero2"])
+    ipCliente = json_data["ip"]
+    print(f"Enviado: {json_data['numero1']} al tema CATETO1")
+    print(f"Enviado: {json_data['numero2']} al tema CATETO2")
 
-    print("Peticion recibida: num1 "+str(numero1)+" num2 "+ str(numero2)+ " IP "+topic)  
+# Definición de qué hacer si llega el cateto 1
+def on_message_cateto1(client, userdata, message):
+    global received_cateto1, cateto1
+    print(f"Recibido: {message.payload.decode(FORMAT)} del tema {message.topic}")
+    cateto1 = float(message.payload.decode(FORMAT))
+    received_cateto1 = True
 
-    #aqui se le envia de nuevo al broker para que se lo envie al servidor de calculo correspondiente
-    res1=enviar_calculo(numero1,numero1,1,"CALCULO",client)
+# Definición de qué hacer si llega el cateto 2
+def on_message_cateto2(client, userdata, message):
+    global received_cateto2, cateto2
+    print(f"Recibido: {message.payload.decode(FORMAT)} del tema {message.topic}")
+    cateto2 = float(message.payload.decode(FORMAT))
+    received_cateto2 = True
 
-    res2=enviar_calculo(numero2,numero2,2,"CALCULO",client)
+# Definición de qué hacer si llega la hipotenusa
+def on_message_hipotenusa(client, userdata, message):
+    global ipCliente, cateto1, cateto2, hipotenusa_mandado, peticion_recibida
+    hipotenusa_mandado = True
+    print(f"Mensaje recibido: {message.payload.decode(FORMAT)} del tema {message.topic}")
+    client.publish(ipCliente, float(message.payload.decode(FORMAT)))
+    print(f"Enviado: {message.payload.decode(FORMAT)} al tema ipCliente")
+    peticion_recibida = False
 
-    res_final=enviar_calculo(res1,res2,3,"CALCULO",client)
-
-
-    eviar_respuesta(2,topic,client)
-
-def enviar_calculo(numero1,numero2,tipo,topic,client):
-    new_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,"CENTRALREQUEST")
-    new_client.connect(mqttBroker)
-    print("enviando")
-    enviar = json.dumps({"numero1": numero1, "numero2": numero2, "topic": LOCALHOST, "tipo": tipo})
-    client.publish(topic, enviar)
-    enviar_dict = json.loads(enviar)
-
-    print(
-        "Publicado: val1 "
-        + str(enviar_dict["numero1"]) # Convertir el entero a cadena
-        + " val2 "
-        + str(enviar_dict["numero2"])
-        + " topic "
-        + enviar_dict["topic"]
-        + " tipo: "
-        + str(enviar_dict["tipo"])
-        + " al tema CALCULO"
-    )
-
-    return 1
-        
-
-def eviar_respuesta(res,topic,client):
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "CENTRAL")
-
-    client.connect(mqttBroker)
-
-    enviar = json.dumps({"respuesta": res})
-
-    client.publish(topic, enviar)
-
-    # Convertir la cadena JSON de vuelta a un diccionario
-    enviar_dict = json.loads(enviar)
-
-    print(
-        "publicado: respuesta "
-        + str(enviar_dict["respuesta"])
-    )
-
-    # Detener el bucle de eventos y desconectar el cliente MQTT
-    client.disconnect()
-    client.loop_stop()
-    print("ESPERANDO OTRA PETICION")
-
-    
-#MAIN
+# Inicio del programa principal
 print("[ENCENDIENDO] SERVIDOR CENTRAL")
 
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,"CENTRAL")
-# Asociación de la función de devolución de llamada on_message al cliente MQTT
-
-# Conexión al broker MQTT y suscripción al tema "test/topic"
+# Crear un cliente MQTT
+client = mqtt.Client(2, "CENTRAL")
 client.connect(mqttBroker)
-client.subscribe("PETICION")
 
-# Inicio del bucle de eventos del cliente MQTT
+# Definición de los callbacks
+client.message_callback_add("PETICION", on_message_peticion)
+client.message_callback_add("RESPUESTA_CATETO1", on_message_cateto1)
+client.message_callback_add("RESPUESTA_CATETO2", on_message_cateto2)
+client.message_callback_add("RESPUESTA_HIPOTENUSA", on_message_hipotenusa)
+
+# Bucle de eventos del cliente MQTT
 client.loop_start()
-# Bucle principal para mantener el script en ejecución
+
+# Suscribirse a los temas relevantes
+client.subscribe("PETICION")
+client.subscribe("RESPUESTA_CATETO1")
+client.subscribe("RESPUESTA_CATETO2")
+client.subscribe("RESPUESTA_HIPOTENUSA")
+
+# Mantener el script en ejecución
 try:
+    timeout = 5  # Tiempo de espera en segundos
+    start_time = time.time()
+
     while True:
-        # Asociación de la función de devolución de llamada on_message al cliente MQTT
-        client.on_message = on_message
-        #print("esperando")
         time.sleep(1)
+        if received_cateto1 and received_cateto2:
+            client.publish("HIPOTENUSA", json.dumps({"cateto1": cateto1, "cateto2": cateto2}))
+            print(f"Enviado: {cateto1} y {cateto2} al tema HIPOTENUSA")
+            received_cateto1 = False; received_cateto2 = False
+        # Verificar si ha ocurrido un timeout y no se ha enviado la hipotenusa
+        if time.time() - start_time > timeout and not hipotenusa_mandado and peticion_recibida:
+            # Calcular y publicar la hipotenusa con valores predeterminados
+            hipotenusa = sqrt(float(json_data["numero1"]) ** 2 + float(json_data["numero2"]) ** 2)
+            client.publish(ipCliente, hipotenusa)
+            print(f"Enviado: {hipotenusa} al tema ipCliente")
+            peticion_recibida = False
+
 except KeyboardInterrupt:
     # Si se interrumpe manualmente el script, detener el bucle de eventos y desconectar el cliente MQTT
     client.disconnect()
