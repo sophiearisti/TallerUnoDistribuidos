@@ -13,7 +13,7 @@ def on_message(client, userdata, message):
 
 print("[ENCENDIENDO] SERVIDOR CALCULO2")
 # Crear un cliente MQTT
-client = mqtt.Client(2,"CALCULO2")
+client = mqtt.Client(2,"CALCULO23")
 client.connect(mqttBroker)
 
 try:
