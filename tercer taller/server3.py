@@ -4,7 +4,7 @@ import time
 import json
 
 FORMAT = "utf-8"
-mqttBroker = "mqtt.eclipseprojects.io"
+mqttBroker = "broker.hivemq.com"
 
 def on_message(client, userdata, message):
     print(f"Recibido: {message.payload.decode('utf-8')} del tema {message.topic}")

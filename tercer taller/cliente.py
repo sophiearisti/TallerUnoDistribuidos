@@ -3,7 +3,7 @@ import time
 import paho.mqtt.client as mqtt
 import socket
 
-mqttBroker = "mqtt.eclipseprojects.io"
+mqttBroker = "broker.hivemq.com"
 FORMAT = "utf-8"
 ipCliente = socket.gethostbyname(socket.gethostname())
 respuesta = False
