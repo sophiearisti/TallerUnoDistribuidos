@@ -1,14 +1,12 @@
-import asyncio
-import json
 import time
 import random
-from Sensor import Sensor
+import json
+from sensor import Sensor
 from constants import environment
 from datetime import datetime
-
+import asyncio
 
 class SensorHumo(Sensor):
-
     max = environment.MAX_HUMO
     min = environment.MIN_HUMO
     tiempo = environment.TIEMPO_HUMO
@@ -22,18 +20,17 @@ class SensorHumo(Sensor):
         if probability < self.prob_errores:
             return None
 
+        probability = random.random()
+        if probability < 0.5:
+            return self.max
         else:
-            probability = random.random()
-            if probability < 0.5:
-                return self.max
-            else:
-                return self.min
+            return self.min
 
     async def generarValores(self):
-        print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
+        print(f"ENCENDIENDO SENSOR HUMO CON ID {self.pid}...")
 
         while True:
-            muestra = float(self.obtenerMuestra())
+            muestra = self.obtenerMuestra()
             tipo_mensaje = self.enRango(muestra)
 
             if tipo_mensaje == environment.TIPO_RESULTADO_ALERTA:
@@ -65,5 +62,14 @@ class SensorHumo(Sensor):
             return environment.TIPO_RESULTADO_ERROR
 
     def generarAlerta(self, muestra):
-        print("generar alerta al sistema de calidad")
-        print("generar alerta al aspersor")
+        print("Generar alerta al sistema de calidad")
+        print("Generar alerta al aspersor")
+
+if __name__ == "__main__":
+    sensor_humo = SensorHumo(
+        tipo="humo",
+        prob_correctos=0.8,
+        prob_fuera_rango=0.15,
+        prob_errores=0.05
+    )
+    asyncio.run(sensor_humo.generarValores())

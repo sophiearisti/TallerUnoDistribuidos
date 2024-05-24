@@ -2,7 +2,7 @@ import random
 import time
 import json
 from constants import environment
-from Sensor import Sensor
+from sensor import Sensor
 from datetime import datetime
 import zmq.asyncio
 import asyncio

@@ -2,13 +2,12 @@ import asyncio
 import json
 import time
 import random
-from Sensor import Sensor
+from sensor import Sensor
 from constants import environment
 from datetime import datetime
 
 
 class SensorTemperatura(Sensor):
-
     max = 29.4
     min = 11
     tiempo = 6
@@ -23,7 +22,7 @@ class SensorTemperatura(Sensor):
             return "{:.1f}".format(random.uniform(self.min, self.max))
 
         elif probability < self.prob_correctos + self.prob_fuera_rango:
-            if probability < 0.5:
+            if random.random() < 0.5:
                 return "{:.1f}".format(random.uniform(0.1, self.min) - 0.1)
             else:
                 return "{:.1f}".format(random.uniform(self.max, 99.9) + 0.1)
@@ -32,7 +31,7 @@ class SensorTemperatura(Sensor):
             return "{:.1f}".format(random.uniform(-self.min, -0.1))
 
     async def generarValores(self):
-        print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
+        print(f"ENCENDIENDO SENSOR TEMPERATURA CON ID {self.pid}...")
 
         while True:
             muestra = float(self.obtenerMuestra())
@@ -59,9 +58,23 @@ class SensorTemperatura(Sensor):
             await asyncio.sleep(self.tiempo)
 
     def enRango(self, muestra):
-        if muestra > self.min and muestra < self.max:
+        if self.min < muestra < self.max:
             return environment.TIPO_RESULTADO_MUESTRA
         elif muestra < 0:
             return environment.TIPO_RESULTADO_ERROR
         else:
             return environment.TIPO_RESULTADO_ALERTA
+
+    def generarAlerta(self, muestra):
+        print("Generar alerta al sistema de calidad")
+        print("Generar alerta al sistema de refrigeración")
+
+
+if __name__ == "__main__":
+    sensor_temperatura = SensorTemperatura(
+        tipo="temperatura",
+        prob_correctos=0.8,
+        prob_fuera_rango=0.15,
+        prob_errores=0.05
+    )
+    asyncio.run(sensor_temperatura.generarValores())
