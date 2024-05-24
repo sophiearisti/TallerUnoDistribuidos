@@ -1,12 +1,9 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
+import zmq.asyncio
 from constants import environment
-import zmq
 
 class Sensor:
-
-    id_Contador=0
-    ip_proxy = environment.IP_PROXY
-    ip_SC=environment.IP_SC_EDGE
+    id_Contador = 0
 
     context = zmq.asyncio.Context()
     socket = context.socket(zmq.PUB)
@@ -17,24 +14,20 @@ class Sensor:
         self.prob_correctos = prob_correctos
         self.prob_fuera_rango = prob_fuera_rango
         self.prob_errores = prob_errores
-        # Incrementar el contador
         Sensor.id_Contador += 1
         self.pid = Sensor.id_Contador
 
-    def generarAlerta(self,muestra):
-        print("generar alerta al sistema de calidad")
+    def generarAlerta(self, muestra):
+        print("Generar alerta al sistema de calidad")
 
     @abstractmethod
     def obtenerMuestra(self):
         pass
 
     @abstractmethod
-    def generarValores(self):
+    async def generarValores(self):
         pass
 
     @abstractmethod
-    def enRango(self,muestra):
+    def enRango(self, muestra):
         pass
-
-
- 

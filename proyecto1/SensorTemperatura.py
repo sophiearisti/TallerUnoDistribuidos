@@ -1,3 +1,5 @@
+import asyncio
+import json
 import time
 import random
 from Sensor import Sensor
@@ -29,14 +31,11 @@ class SensorTemperatura(Sensor):
         else:
             return "{:.1f}".format(random.uniform(-self.min, -0.1))
 
-    def generarValores(self):
-
-        print(f"ENCENDIENDO SENSOR TEMPERATURA CON ID {self.pid}...")
+    async def generarValores(self):
+        print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
 
         while True:
-
             muestra = float(self.obtenerMuestra())
-
             tipo_mensaje = self.enRango(muestra)
 
             if tipo_mensaje == environment.TIPO_RESULTADO_ALERTA:
@@ -48,16 +47,16 @@ class SensorTemperatura(Sensor):
                 "tipo_mensaje": tipo_mensaje,
                 "valor": muestra,
                 "TS": timestamp,
-                "id":self.pid 
+                "id": self.pid
             }
 
             print(
                 f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra} tiempo {datetime.fromtimestamp(timestamp)}"
             )
 
-            self.socket.send_json(result)
-
-            time.sleep(self.tiempo)
+            message = json.dumps(result)
+            await self.socket.send_string(f"SENSOR {message}")
+            await asyncio.sleep(self.tiempo)
 
     def enRango(self, muestra):
         if muestra > self.min and muestra < self.max:

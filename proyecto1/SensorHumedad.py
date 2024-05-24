@@ -1,12 +1,13 @@
 import random
 import time
+import json
 from constants import environment
 from Sensor import Sensor
 from datetime import datetime
-
+import zmq.asyncio
+import asyncio
 
 class SensorHumedad(Sensor):
-
     max = environment.MAX_HUMEDAD
     min = environment.MIN_HUMEDAD
     tiempo = environment.TIEMPO_HUMEDAD
@@ -19,21 +20,16 @@ class SensorHumedad(Sensor):
 
         if probability < self.prob_correctos:
             return "{:.1f}".format(random.uniform(self.min, self.max))
-
         elif probability < self.prob_correctos + self.prob_fuera_rango:
-            return "{:.1f}".format(random.uniform(-0.1, self.min) - 0.1)
-
+            return "{:.1f}".format(random.uniform(self.max + 0.1, self.max + 10))
         else:
-            return "{:.1f}".format(random.uniform(-self.min, 0) - 0.1)
+            return "{:.1f}".format(random.uniform(-self.min, -0.1))
 
-    def generarValores(self):
-
+    async def generarValores(self):
         print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
 
         while True:
-
             muestra = float(self.obtenerMuestra())
-
             tipo_mensaje = self.enRango(muestra)
 
             if tipo_mensaje == environment.TIPO_RESULTADO_ALERTA:
@@ -44,7 +40,7 @@ class SensorHumedad(Sensor):
                 "tipo_sensor": self.tipo,
                 "tipo_mensaje": tipo_mensaje,
                 "valor": muestra,
-                "TS": time.time(),
+                "TS": timestamp,
                 "id": self.pid
             }
 
@@ -52,12 +48,12 @@ class SensorHumedad(Sensor):
                 f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra} tiempo {datetime.fromtimestamp(timestamp)}"
             )
 
-            self.socket.send_json(result)
-
-            time.sleep(self.tiempo)
+            message = json.dumps(result)
+            await self.socket.send_string(f"SENSOR {message}")
+            await asyncio.sleep(self.tiempo)
 
     def enRango(self, muestra):
-        if muestra > self.min and muestra < self.max:
+        if self.min <= muestra <= self.max:
             return environment.TIPO_RESULTADO_MUESTRA
         elif muestra < 0:
             return environment.TIPO_RESULTADO_ERROR

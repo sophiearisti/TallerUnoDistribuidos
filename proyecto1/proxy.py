@@ -1,4 +1,7 @@
+import asyncio
 import zmq
+import zmq.asyncio
+import json
 from datetime import datetime
 from constants import environment
 
@@ -18,17 +21,19 @@ class Proxy:
     def get_color(self, tipo_mensaje):
         return self.colors.get(tipo_mensaje, '')
 
-    async  def inicializar(self):
+    async def inicializar(self):
         context = zmq.asyncio.Context()
-        reciever = context.socket(zmq.SUB)
-        reciever.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["sub_port"]}')
-        reciever.setsockopt(zmq.SUBSCRIBE, "SENSOR")
+        receiver = context.socket(zmq.SUB)
+        receiver.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["sub_port"]}')
+        receiver.setsockopt_string(zmq.SUBSCRIBE, "SENSOR")
 
         print("INICIALIZANDO PROXY")
 
         while True:
             print("RECIBIENDO MENSAJES...")
-            result = await reciever.recv_json()
+            message = await receiver.recv_string()
+            topic, json_result = message.split(' ', 1)
+            result = json.loads(json_result)
 
             color = self.get_color(result['tipo_mensaje'])
             print(f"HORA:\t {datetime.fromtimestamp(result['TS'])}\tSENSOR:\t{result['tipo_sensor']}\tID:\t{result['id']}\tVALOR:\t{result['valor']}\tTIPO MENSAJE\t{color}{result['tipo_mensaje']}{self.reset_color}")
@@ -70,9 +75,9 @@ class Proxy:
         else:
             return False
 
-def main():
+async def main():
     proxy = Proxy()
-    proxy.inicializar()
+    await proxy.inicializar()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
