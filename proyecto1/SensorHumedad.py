@@ -28,8 +28,6 @@ class SensorHumedad(Sensor):
 
     def generarValores(self):
 
-        self.sender_proxy.connect(f"tcp://{self.ip_proxy}:5558")
-
         print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
 
         while True:
@@ -54,7 +52,7 @@ class SensorHumedad(Sensor):
                 f"ENVIADO MENSAJE {self.tipo} CON ID {self.pid}: tipo_mensaje {tipo_mensaje} valor {muestra} tiempo {datetime.fromtimestamp(timestamp)}"
             )
 
-            self.sender_proxy.send_json(result)
+            self.socket.send_json(result)
 
             time.sleep(self.tiempo)
 

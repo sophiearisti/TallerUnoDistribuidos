@@ -1,5 +1,6 @@
 import zmq
 from datetime import datetime
+from constants import environment
 
 class Proxy:
     rangos = {"humedad": (70, 100), "temperatura": (11, 29.4), "humo": (True, False)}
@@ -17,16 +18,17 @@ class Proxy:
     def get_color(self, tipo_mensaje):
         return self.colors.get(tipo_mensaje, '')
 
-    def inicializar(self):
-        context = zmq.Context()
-        receiver = context.socket(zmq.PULL)
-        receiver.bind(f"tcp://{self.ip_propia}:5558")
+    async  def inicializar(self):
+        context = zmq.asyncio.Context()
+        reciever = context.socket(zmq.SUB)
+        reciever.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["sub_port"]}')
+        reciever.setsockopt(zmq.SUBSCRIBE, "SENSOR")
 
         print("INICIALIZANDO PROXY")
 
         while True:
             print("RECIBIENDO MENSAJES...")
-            result = receiver.recv_json()
+            result = await reciever.recv_json()
 
             color = self.get_color(result['tipo_mensaje'])
             print(f"HORA:\t {datetime.fromtimestamp(result['TS'])}\tSENSOR:\t{result['tipo_sensor']}\tID:\t{result['id']}\tVALOR:\t{result['valor']}\tTIPO MENSAJE\t{color}{result['tipo_mensaje']}{self.reset_color}")

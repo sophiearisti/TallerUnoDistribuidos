@@ -7,9 +7,10 @@ class Sensor:
     id_Contador=0
     ip_proxy = environment.IP_PROXY
     ip_SC=environment.IP_SC_EDGE
-    context = zmq.Context()
-    sender_proxy = context.socket(zmq.PUSH)
-    sender_SC = context.socket(zmq.REQ)
+
+    context = zmq.asyncio.Context()
+    socket = context.socket(zmq.PUB)
+    socket.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["pub_port"]}')
 
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         self.tipo = tipo

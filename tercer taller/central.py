@@ -61,6 +61,8 @@ print("[ENCENDIENDO] SERVIDOR CENTRAL")
 # Crear un cliente MQTT
 client = mqtt.Client(2, ipCentral)
 client.connect(mqttBroker)
+client.message_callback_add(ipCentral + "C1", on_message_cateto1)
+client.subscribe(ipCentral + "C1")
 
 # Definición de los callbacks
 client.message_callback_add("PETICION", on_message_peticion)
