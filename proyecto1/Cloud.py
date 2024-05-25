@@ -14,7 +14,7 @@ class Cloud:
         while True:
             result = receiver.recv_json()
             print(f"mensaje recibido {result}")
-            receiver.send("Mensaje recibido")
+            receiver.send_string("Mensaje recibido")
 
     def enviar_BDD(self, informacion):
         print("ENVIAR A BDD")

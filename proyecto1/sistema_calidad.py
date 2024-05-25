@@ -11,6 +11,8 @@ def main(param):
     receiver = context.socket(zmq.REP)
     if param==1:
         receiver.bind(f"tcp://{environment.SC_EDGE['host']}:{environment.SC_EDGE['port']}")
+
+        #aqui se hace algo diferente
     elif param==2:
         receiver.bind(f"tcp://{environment.SC_FOG['host']}:{environment.SC_FOG['port']}")
     else:

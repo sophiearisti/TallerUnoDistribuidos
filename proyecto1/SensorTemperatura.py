@@ -73,5 +73,6 @@ class SensorTemperatura(Sensor):
         self.senderSC.connect(f"tcp://{environment.SC_EDGE['host']}:{environment.SC_EDGE['port']}")
         msg=f"Alarma temperatura: {muestra}. Sensor con id {self.pid}"
         self.senderSC.send_string(msg)
+        time.sleep(1)
         msg_in = self.senderSC.recv_string()
         print(msg_in)

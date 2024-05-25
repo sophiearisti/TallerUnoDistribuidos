@@ -44,6 +44,7 @@ class Fog:
             print(f"HORA:\t {datetime.fromtimestamp(result['TS'])}\tSENSOR:\t{result['tipo_sensor']}\tID:\t{result['id']}\tVALOR:\t{result['valor']}\tTIPO MENSAJE\t{color}{result['tipo_mensaje']}{self.reset_color}")
 
             if self.validar(result):
+                self.enviar_cloud(result)
                 print("VALORES CORRECTOS")
             else:
                 print("VALORES INCORRECTOS")
@@ -83,7 +84,7 @@ class Fog:
     def enviar_cloud(self,mensaje):
         self.senderCloud.connect(f"tcp://{environment.CLOUD['host']}:{environment.CLOUD['port']}")
         self.senderCloud.send_json(mensaje)
-        msg_in = self.senderCloud.recv()
+        msg_in = self.senderCloud.recv_string()
         print(msg_in)
         
 
