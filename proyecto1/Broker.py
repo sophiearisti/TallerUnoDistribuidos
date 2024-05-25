@@ -1,31 +1,26 @@
-import asyncio
-import zmq.asyncio
+import zmq
+
 from constants import environment
 
-async def run_proxy():
-    context = zmq.asyncio.Context()
+def run_broker():
+    context = zmq.Context()
 
     # Creating subX interface
-    subX = context.socket(zmq.SUB)
+    subX = context.socket(zmq.XSUB)
     subX.bind(f'tcp://*:{environment.BROKER_SOCKET["sub_port"]}')
-    subX.setsockopt_string(zmq.SUBSCRIBE, "")
+
 
     # Creating the pubX interface
-    pubX = context.socket(zmq.PUB)
+    pubX = context.socket(zmq.XPUB)
     pubX.bind(f'tcp://*:{environment.BROKER_SOCKET["pub_port"]}')
 
-    print("Proxy is active!")
+    print("Broker is active!")
 
-    try:
-        # connect subX and pubX (creating the proxy)
-        zmq.proxy(subX, pubX)
-    except Exception as e:
-        print(f"Proxy error: {e}")
-    finally:
-        # close and free resources
-        subX.close()
-        pubX.close()
-        context.term()
+    zmq.proxy(subX, pubX)
+    
+    subX.close()
+    pubX.close()
+    context.term()
 
 if __name__ == "__main__":
-    asyncio.run(run_proxy())
+    run_broker()

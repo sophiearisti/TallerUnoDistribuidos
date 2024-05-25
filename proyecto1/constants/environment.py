@@ -1,27 +1,20 @@
 from typing import TypedDict
 
-PROXY_PORT = 5558
-SENSOR_PORT = 5001
+
 CLOUD_PORT = 5001
 ASPERSOR_PORT = 5001
-PROXY_BACKUP_PORT = 5001
 SC_PROXY_PORT = 5557
 SC_EDGE_PORT = 5007
 SC_CLOUD_PORT = 5007
-BROKER_PUB_PORT = 5002
-BROKER_SUB_PORT = 5003
 
-IP_PROXY = "192.168.193.126"
-IP_PROXY_BACKUP = ""
 IP_CLOUD = ""
 IP_SC_PROXY = ""
 IP_SC_EDGE = ""
 IP_SC_CLOUD = ""
 IP_ASPERSOR = ""
-IP_BROKER = "192.168.193.148"
 
 CANT_SENSORES = 10
-
+SENSOR_PORT = 5001
 SENSOR_HUMO = "humo"
 SENSOR_HUMEDAD = "humedad"
 SENSOR_TEMPERATURA = "temperatura"
@@ -59,14 +52,16 @@ Socket = TypedDict('Socket', {
 
 #para el fog informacion
 PROXY_SOCKET: Socket = {
-    'host': IP_PROXY, 
-    'port': PROXY_PORT,
+    'host': "192.168.193.126", 
+    'port': 5558,
 }
+
+
 
 #para el fog BACK UP
 PROXY_BACKUP_SOCKET: Socket = {
-    'host': IP_PROXY_BACKUP, 
-    'port': PROXY_BACKUP_PORT,
+    'host': "", 
+    'port': 5001,
 }
 
 #informacion del broker principal
@@ -75,11 +70,10 @@ BrokerSocket = TypedDict('BrokerSocket', {
     'sub_port': int,
     'pub_port': int,
 })
-
 BROKER_SOCKET: BrokerSocket = {
-    'host': IP_BROKER, 
-    'sub_port': BROKER_SUB_PORT,
-    'pub_port': BROKER_PUB_PORT,
+    'host': "192.168.193.126", 
+    'sub_port': 5006,
+    'pub_port': 5086,
 }
 
 

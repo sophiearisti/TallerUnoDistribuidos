@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import time
 import random
 import json
@@ -5,6 +6,16 @@ from sensor import Sensor
 from constants import environment
 from datetime import datetime
 import asyncio
+=======
+import json
+import random
+import time
+from datetime import datetime
+
+from constants import environment
+from Sensor import Sensor
+
+>>>>>>> Stashed changes
 
 class SensorHumo(Sensor):
     max = environment.MAX_HUMO
@@ -26,9 +37,18 @@ class SensorHumo(Sensor):
         else:
             return self.min
 
+<<<<<<< Updated upstream
     async def generarValores(self):
         print(f"ENCENDIENDO SENSOR HUMO CON ID {self.pid}...")
 
+=======
+    def generarValores(self):
+        print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
+        self.socket.connect(
+            f'tcp://localhost:{environment.BROKER_SOCKET["sub_port"]}'
+        )
+        time.sleep(1)
+>>>>>>> Stashed changes
         while True:
             muestra = self.obtenerMuestra()
             tipo_mensaje = self.enRango(muestra)
@@ -42,7 +62,7 @@ class SensorHumo(Sensor):
                 "tipo_mensaje": tipo_mensaje,
                 "valor": muestra,
                 "TS": timestamp,
-                "id": self.pid
+                "id": self.pid,
             }
 
             print(
@@ -50,8 +70,8 @@ class SensorHumo(Sensor):
             )
 
             message = json.dumps(result)
-            await self.socket.send_string(f"SENSOR {message}")
-            await asyncio.sleep(self.tiempo)
+            self.socket.send(bytes(f"SENSOR {message}", 'utf-8'))
+            time.sleep(self.tiempo)
 
     def enRango(self, muestra):
         if muestra == self.min:

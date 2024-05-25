@@ -1,11 +1,20 @@
+import json
 import random
 import time
-import json
+from datetime import datetime
+
+import zmq
+
 from constants import environment
+<<<<<<< Updated upstream
 from sensor import Sensor
 from datetime import datetime
 import zmq.asyncio
 import asyncio
+=======
+from Sensor import Sensor
+
+>>>>>>> Stashed changes
 
 class SensorHumedad(Sensor):
     max = environment.MAX_HUMEDAD
@@ -25,8 +34,12 @@ class SensorHumedad(Sensor):
         else:
             return "{:.1f}".format(random.uniform(-self.min, -0.1))
 
-    async def generarValores(self):
+    def generarValores(self):
         print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
+        self.socket.connect(
+            f'tcp://localhost:{environment.BROKER_SOCKET["sub_port"]}'
+        )
+        time.sleep(1)
 
         while True:
             muestra = float(self.obtenerMuestra())
@@ -41,7 +54,7 @@ class SensorHumedad(Sensor):
                 "tipo_mensaje": tipo_mensaje,
                 "valor": muestra,
                 "TS": timestamp,
-                "id": self.pid
+                "id": self.pid,
             }
 
             print(
@@ -49,8 +62,8 @@ class SensorHumedad(Sensor):
             )
 
             message = json.dumps(result)
-            await self.socket.send_string(f"SENSOR {message}")
-            await asyncio.sleep(self.tiempo)
+            self.socket.send(bytes(f"SENSOR {message}", 'utf-8'))
+            time.sleep(self.tiempo)
 
     def enRango(self, muestra):
         if self.min <= muestra <= self.max:

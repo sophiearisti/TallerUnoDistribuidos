@@ -1,11 +1,10 @@
-import asyncio
+
 import zmq
-import zmq.asyncio
 import json
 from datetime import datetime
 from constants import environment
 
-class Proxy:
+class Fog:
     rangos = {"humedad": (70, 100), "temperatura": (11, 29.4), "humo": (True, False)}
     ip_cloud = ""
     ip_SC = ""
@@ -21,18 +20,25 @@ class Proxy:
     def get_color(self, tipo_mensaje):
         return self.colors.get(tipo_mensaje, '')
 
-    async def inicializar(self):
-        context = zmq.asyncio.Context()
+    def inicializar(self):
+        context = zmq.Context()
         receiver = context.socket(zmq.SUB)
-        receiver.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["sub_port"]}')
-        receiver.setsockopt_string(zmq.SUBSCRIBE, "SENSOR")
+        receiver.connect(f'tcp://localhost:{environment.BROKER_SOCKET["pub_port"]}')
+        receiver.setsockopt(zmq.SUBSCRIBE, bytes("SENSOR", 'utf-8'))
 
         print("INICIALIZANDO PROXY")
 
         while True:
             print("RECIBIENDO MENSAJES...")
-            message = await receiver.recv_string()
-            topic, json_result = message.split(' ', 1)
+            message = receiver.recv_multipart()
+            # Obtener la cadena de bytes del primer elemento de la lista
+            message_bytes = message[0]
+
+            # Decodificar los bytes a una cadena de texto
+            message_text = message_bytes.decode('utf-8')
+
+            # Dividir la cadena de texto en dos partes en el primer espacio
+            topic, json_result = message_text.split(' ', 1)
             result = json.loads(json_result)
 
             color = self.get_color(result['tipo_mensaje'])
@@ -75,9 +81,9 @@ class Proxy:
         else:
             return False
 
-async def main():
-    proxy = Proxy()
-    await proxy.inicializar()
+def main():
+    proxy = Fog()
+    proxy.inicializar()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+   main()

@@ -1,10 +1,15 @@
-import asyncio
 import json
-import time
 import random
+<<<<<<< Updated upstream
 from sensor import Sensor
 from constants import environment
+=======
+import time
+>>>>>>> Stashed changes
 from datetime import datetime
+
+from constants import environment
+from Sensor import Sensor
 
 
 class SensorTemperatura(Sensor):
@@ -30,8 +35,17 @@ class SensorTemperatura(Sensor):
         else:
             return "{:.1f}".format(random.uniform(-self.min, -0.1))
 
+<<<<<<< Updated upstream
     async def generarValores(self):
         print(f"ENCENDIENDO SENSOR TEMPERATURA CON ID {self.pid}...")
+=======
+    def generarValores(self):
+        print(f"ENCENDIENDO SENSOR TEMPERATURA CON ID {self.pid}...")
+        self.socket.connect(
+            f'tcp://localhost:{environment.BROKER_SOCKET["sub_port"]}'
+        )
+        time.sleep(1)
+>>>>>>> Stashed changes
 
         while True:
             muestra = float(self.obtenerMuestra())
@@ -46,7 +60,7 @@ class SensorTemperatura(Sensor):
                 "tipo_mensaje": tipo_mensaje,
                 "valor": muestra,
                 "TS": timestamp,
-                "id": self.pid
+                "id": self.pid,
             }
 
             print(
@@ -54,8 +68,8 @@ class SensorTemperatura(Sensor):
             )
 
             message = json.dumps(result)
-            await self.socket.send_string(f"SENSOR {message}")
-            await asyncio.sleep(self.tiempo)
+            self.socket.send(bytes(f"SENSOR {message}", 'utf-8'))
+            time.sleep(self.tiempo)
 
     def enRango(self, muestra):
         if self.min < muestra < self.max:

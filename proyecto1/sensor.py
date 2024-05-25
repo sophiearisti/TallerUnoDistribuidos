@@ -1,14 +1,12 @@
 from abc import ABC, abstractmethod
-import zmq.asyncio
-from constants import environment
+import zmq
 
 class Sensor:
     id_Contador = 0
 
-    context = zmq.asyncio.Context()
+    context = zmq.Context()
     socket = context.socket(zmq.PUB)
-    socket.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["pub_port"]}')
-
+    
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         self.tipo = tipo
         self.prob_correctos = prob_correctos
@@ -25,7 +23,7 @@ class Sensor:
         pass
 
     @abstractmethod
-    async def generarValores(self):
+    def generarValores(self):
         pass
 
     @abstractmethod
