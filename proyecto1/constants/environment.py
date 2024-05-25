@@ -1,18 +1,4 @@
 from typing import TypedDict
-
-
-CLOUD_PORT = 5001
-ASPERSOR_PORT = 5001
-SC_PROXY_PORT = 5557
-SC_EDGE_PORT = 5007
-SC_CLOUD_PORT = 5007
-
-IP_CLOUD = ""
-IP_SC_PROXY = ""
-IP_SC_EDGE = ""
-IP_SC_CLOUD = ""
-IP_ASPERSOR = ""
-
 CANT_SENSORES = 10
 SENSOR_PORT = 5001
 SENSOR_HUMO = "humo"
@@ -52,7 +38,7 @@ Socket = TypedDict('Socket', {
 
 #para el fog informacion
 PROXY_SOCKET: Socket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'port': 5558,
 }
 
@@ -69,7 +55,7 @@ BrokerSocket = TypedDict('BrokerSocket', {
     'pub_port': int,
 })
 BROKER_SOCKET: BrokerSocket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'sub_port': 5006,
     'pub_port': 5086,
 }
@@ -77,45 +63,36 @@ BROKER_SOCKET: BrokerSocket = {
 
 #para el aspersor
 ASPERSOR: Socket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'port': 5011,
 }
 
 #para el SC
 SC_EDGE: Socket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'port': 5091,
 }
 
 #para el SC
 SC_FOG: Socket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'port': 5092,
 }
 
 SC_CLOUD: Socket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'port': 5093,
 }
 
 CLOUD: Socket = {
-    'host': "192.168.193.148", 
+    'host': "192.168.193.126", 
     'port': 5223,
 }
 
-# DB_SOCKET: Socket = {
-#     'host': '172.29.84.70', # TODO: Change this to the IP of the database server
-#     'port': 5558,
-# }
-
-# HEALTH_CHECK_SOCKET: HealthCheckSocket = {
-#     'host': '172.29.84.70', # TODO: Change this to the IP of the health check server
-#     'port_res': 5559,
-#     'port_health_check': 5560,
-# }
-
 MONGODB = {
-    'uri': 'mongodb+srv://admin:admin@proyectodistribuidos.by5tqz6.mongodb.net/?retryWrites=true&w=majority&appName=ProyectoDistribuidos',
-    'database': 'ProyectoDistribuidos',
-    'collection': 'SensorData',
+    'uri': 'mongodb+srv://saristizabal1017:2ieC9pQ5Y1913x56@distribuidos.eguzenz.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true',
+    'database': 'distribuidos',
+    'collection_sensor': 'SensorData',
+    'collection_calculation': 'CalculationData',
+    'collection_alert': 'AlertData',
 }

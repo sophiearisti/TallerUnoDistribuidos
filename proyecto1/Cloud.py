@@ -11,7 +11,7 @@ class Cloud:
     def __init__(self):
         self.client = MongoClient(environment.MONGODB['uri'])
         self.db = self.client[environment.MONGODB['database']]
-        self.collection = self.db[environment.MONGODB['collection']]
+        self.collection = self.db[environment.MONGODB['collection_sensor']]
     
     def inicializar(self):
         receiver = self.context.socket(zmq.REP)
