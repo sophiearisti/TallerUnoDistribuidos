@@ -52,7 +52,7 @@ Socket = TypedDict('Socket', {
 
 #para el fog informacion
 PROXY_SOCKET: Socket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'port': 5558,
 }
 
@@ -69,7 +69,7 @@ BrokerSocket = TypedDict('BrokerSocket', {
     'pub_port': int,
 })
 BROKER_SOCKET: BrokerSocket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'sub_port': 5006,
     'pub_port': 5086,
 }
@@ -77,29 +77,29 @@ BROKER_SOCKET: BrokerSocket = {
 
 #para el aspersor
 ASPERSOR: Socket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'port': 5011,
 }
 
 #para el SC
 SC_EDGE: Socket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'port': 5091,
 }
 
 #para el SC
 SC_FOG: Socket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'port': 5092,
 }
 
 SC_CLOUD: Socket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'port': 5093,
 }
 
 CLOUD: Socket = {
-    'host': "192.168.193.126", 
+    'host': "192.168.193.148", 
     'port': 5223,
 }
 
@@ -113,3 +113,9 @@ CLOUD: Socket = {
 #     'port_res': 5559,
 #     'port_health_check': 5560,
 # }
+
+MONGODB = {
+    'uri': 'mongodb+srv://admin:admin@proyectodistribuidos.by5tqz6.mongodb.net/?retryWrites=true&w=majority&appName=ProyectoDistribuidos',
+    'database': 'ProyectoDistribuidos',
+    'collection': 'SensorData',
+}
