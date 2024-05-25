@@ -56,8 +56,6 @@ PROXY_SOCKET: Socket = {
     'port': 5558,
 }
 
-
-
 #para el fog BACK UP
 PROXY_BACKUP_SOCKET: Socket = {
     'host': "", 
@@ -76,6 +74,12 @@ BROKER_SOCKET: BrokerSocket = {
     'pub_port': 5086,
 }
 
+
+#para el fog BACK UP
+PROXY_ASPERSOR: Socket = {
+    'host': "192.168.193.126", 
+    'port': 5011,
+}
 
 # DB_SOCKET: Socket = {
 #     'host': '172.29.84.70', # TODO: Change this to the IP of the database server
