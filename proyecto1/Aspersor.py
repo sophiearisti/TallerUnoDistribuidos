@@ -1,15 +1,17 @@
 import zmq
-
-
-encendido=false
-
+from constants import environment
 
 def main():
     context = zmq.Context()
-    receiver = context.socket(zmq.PULL)
-    receiver.bind(f"tcp://{self.ip_propia}:5558")
+    receiver = context.socket(zmq.REP)
+    receiver.bind(f"tcp://{environment.ASPERSOR['host']}:{environment.ASPERSOR['port']}")
+    print("RECIBIENDO MENSAJES...")
+
     while True:
-        print("RECIBIENDO MENSAJES...")
+         result = receiver.recv_string()
+         print("ASPERSOR ACTIVADO")
+         print(f"mensaje recibido {result}")
+         receiver.send_string("Mensaje recibido")
 
 
 if __name__ == "__main__":

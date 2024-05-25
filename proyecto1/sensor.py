@@ -3,9 +3,9 @@ import zmq
 
 class Sensor:
     id_Contador = 0
-
     context = zmq.Context()
     socket = context.socket(zmq.PUB)
+    senderSC = context.socket(zmq.REQ)
     
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         self.tipo = tipo

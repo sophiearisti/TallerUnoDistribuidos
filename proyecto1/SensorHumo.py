@@ -1,15 +1,21 @@
+import asyncio
+import json
 import time
 import random
-import json
+
+import zmq
 from sensor import Sensor
 from constants import environment
 from datetime import datetime
-import asyncio
+
 
 class SensorHumo(Sensor):
+
     max = environment.MAX_HUMO
     min = environment.MIN_HUMO
     tiempo = environment.TIEMPO_HUMO
+    context_aspersor= zmq.Context()
+    sender_aspersor = context_aspersor.socket(zmq.REQ)
 
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores)
@@ -28,9 +34,13 @@ class SensorHumo(Sensor):
 
     def generarValores(self):
         print(f"ENCENDIENDO SENSOR HUMO CON ID {self.pid}...")
+        self.socket.connect(
+             f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["sub_port"]}'
+        )
+        time.sleep(1)
 
         while True:
-            muestra = self.obtenerMuestra()
+            muestra = float(self.obtenerMuestra())
             tipo_mensaje = self.enRango(muestra)
 
             if tipo_mensaje == environment.TIPO_RESULTADO_ALERTA:
@@ -62,6 +72,19 @@ class SensorHumo(Sensor):
             return environment.TIPO_RESULTADO_ERROR
 
     def generarAlerta(self, muestra):
-        print("Generar alerta al sistema de calidad")
-        print("Generar alerta al aspersor")
+        self.sistemaCalidad(muestra)
+        self.aspersor()
 
+    def aspersor(self):
+        self.sender_aspersor.connect(f"tcp://{environment.ASPERSOR['host']}:{environment.ASPERSOR['port']}")
+        msg=f"Activar aspersor. Sensor con id {self.pid}"
+        self.sender_aspersor.send_string(msg)
+        msg_in = self.sender_aspersor.recv_string()
+        print(msg_in)
+
+    def sistemaCalidad(self,muestra):
+        self.senderSC.connect(f"tcp://{environment.SC_EDGE['host']}:{environment.SC_EDGE['port']}")
+        msg=f"Alarma humo: {muestra}. Sensor con id {self.pid}"
+        self.senderSC.send_string(msg)
+        msg_in = self.senderSC.recv_string()
+        print(msg_in)

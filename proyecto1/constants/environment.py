@@ -75,10 +75,32 @@ BROKER_SOCKET: BrokerSocket = {
 }
 
 
-#para el fog BACK UP
-PROXY_ASPERSOR: Socket = {
+#para el aspersor
+ASPERSOR: Socket = {
     'host': "192.168.193.126", 
     'port': 5011,
+}
+
+#para el SC
+SC_EDGE: Socket = {
+    'host': "192.168.193.126", 
+    'port': 5091,
+}
+
+#para el SC
+SC_FOG: Socket = {
+    'host': "192.168.193.126", 
+    'port': 5092,
+}
+
+SC_CLOUD: Socket = {
+    'host': "192.168.193.126", 
+    'port': 5093,
+}
+
+CLOUD: Socket = {
+    'host': "192.168.193.126", 
+    'port': 5223,
 }
 
 # DB_SOCKET: Socket = {

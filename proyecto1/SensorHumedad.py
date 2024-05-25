@@ -4,17 +4,9 @@ import time
 from datetime import datetime
 
 import zmq
-
 from constants import environment
-<<<<<<< Updated upstream
 from sensor import Sensor
 from datetime import datetime
-import zmq.asyncio
-import asyncio
-=======
-from Sensor import Sensor
-
->>>>>>> Stashed changes
 
 class SensorHumedad(Sensor):
     max = environment.MAX_HUMEDAD
@@ -37,7 +29,7 @@ class SensorHumedad(Sensor):
     def generarValores(self):
         print(f"ENCENDIENDO SENSOR HUMEDAD CON ID {self.pid}...")
         self.socket.connect(
-            f'tcp://localhost:{environment.BROKER_SOCKET["sub_port"]}'
+            f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["sub_port"]}'
         )
         time.sleep(1)
 
@@ -72,3 +64,10 @@ class SensorHumedad(Sensor):
             return environment.TIPO_RESULTADO_ERROR
         else:
             return environment.TIPO_RESULTADO_ALERTA
+        
+    def generarAlerta(self, muestra):
+        self.senderSC.connect(f"tcp://{environment.SC_EDGE['host']}:{environment.SC_EDGE['port']}")
+        msg=f"Alarma humedad: {muestra}. Sensor con id {self.pid}"
+        self.senderSC.send_string(msg)
+        msg_in = self.senderSC.recv_string()
+        print(msg_in)

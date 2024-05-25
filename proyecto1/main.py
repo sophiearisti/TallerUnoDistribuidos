@@ -2,7 +2,6 @@ import threading
 from SensorHumo import SensorHumo
 from SensorHumedad  import SensorHumedad
 from SensorTemperatura  import SensorTemperatura
-from Sensor import Sensor
 from constants import environment
 
 def start( ):

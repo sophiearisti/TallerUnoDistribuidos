@@ -1,4 +1,3 @@
-
 import zmq
 import json
 from datetime import datetime
@@ -6,8 +5,9 @@ from constants import environment
 
 class Fog:
     rangos = {"humedad": (70, 100), "temperatura": (11, 29.4), "humo": (True, False)}
-    ip_cloud = ""
-    ip_SC = ""
+    context = zmq.Context()
+    senderSC = context.socket(zmq.REQ)
+    senderCloud = context.socket(zmq.REQ)
     ip_propia = "192.168.193.79"
 
     colors = {
@@ -21,9 +21,8 @@ class Fog:
         return self.colors.get(tipo_mensaje, '')
 
     def inicializar(self):
-        context = zmq.Context()
-        receiver = context.socket(zmq.SUB)
-        receiver.connect(f'tcp://localhost:{environment.BROKER_SOCKET["pub_port"]}')
+        receiver = self.context.socket(zmq.SUB)
+        receiver.connect(f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["pub_port"]}')
         receiver.setsockopt(zmq.SUBSCRIBE, bytes("SENSOR", 'utf-8'))
 
         print("INICIALIZANDO PROXY")
@@ -80,6 +79,13 @@ class Fog:
             return True
         else:
             return False
+        
+    def enviar_cloud(self,mensaje):
+        self.senderCloud.connect(f"tcp://{environment.CLOUD['host']}:{environment.CLOUD['port']}")
+        self.senderCloud.send_json(mensaje)
+        msg_in = self.senderCloud.recv()
+        print(msg_in)
+        
 
 def main():
     proxy = Fog()
