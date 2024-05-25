@@ -3,9 +3,6 @@ import zmq
 
 class Sensor:
     id_Contador = 0
-    context = zmq.Context()
-    socket = context.socket(zmq.PUB)
-    senderSC = context.socket(zmq.REQ)
     
     def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
         self.tipo = tipo
@@ -14,6 +11,9 @@ class Sensor:
         self.prob_errores = prob_errores
         Sensor.id_Contador += 1
         self.pid = Sensor.id_Contador
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PUB)
+        self.senderSC = self.context.socket(zmq.REQ)
 
     def generarAlerta(self, muestra):
         print("Generar alerta al sistema de calidad")

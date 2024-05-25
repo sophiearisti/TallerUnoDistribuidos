@@ -11,7 +11,7 @@ def main():
          result = receiver.recv_string()
          print("ASPERSOR ACTIVADO")
          print(f"mensaje recibido {result}")
-         receiver.send_string("Mensaje recibido")
+         receiver.send_string("Mensaje recibido por el ASPERSOR")
 
 
 if __name__ == "__main__":
