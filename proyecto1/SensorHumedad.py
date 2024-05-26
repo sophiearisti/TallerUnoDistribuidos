@@ -4,17 +4,18 @@ import time
 from datetime import datetime
 
 import zmq
+
 from constants import environment
 from sensor import Sensor
-from datetime import datetime
+
 
 class SensorHumedad(Sensor):
     max = environment.MAX_HUMEDAD
     min = environment.MIN_HUMEDAD
     tiempo = environment.TIEMPO_HUMEDAD
 
-    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores,contador):
-        super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores,contador) # type: ignore
+    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores, contador):
+        super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores, contador)  # type: ignore
 
     def obtenerMuestra(self):
         probability = random.random()
@@ -54,7 +55,7 @@ class SensorHumedad(Sensor):
             )
 
             message = json.dumps(result)
-            self.socket.send(bytes(f"SENSOR {message}", 'utf-8'))
+            self.socket.send(bytes(f"SENSOR {message}", "utf-8"))
             time.sleep(self.tiempo)
 
     def enRango(self, muestra):
@@ -64,10 +65,12 @@ class SensorHumedad(Sensor):
             return environment.TIPO_RESULTADO_ERROR
         else:
             return environment.TIPO_RESULTADO_ALERTA
-        
+
     def generarAlerta(self, muestra):
-        self.senderSC.connect(f"tcp://{environment.SC_EDGE['host']}:{environment.SC_EDGE['port']}")
-        msg=f"Alarma humedad: {muestra}. Sensor con id {self.pid}"
+        self.senderSC.connect(
+            f"tcp://{environment.SC_EDGE['host']}:{environment.SC_EDGE['port']}"
+        )
+        msg = f"Alarma humedad: {muestra}. Sensor con id {self.pid}"
         self.senderSC.send_string(msg)
         msg_in = self.senderSC.recv_string()
         print(msg_in)

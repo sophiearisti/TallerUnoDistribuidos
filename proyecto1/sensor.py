@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+
 import zmq
 
+
 class Sensor:
-    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores,contador):
+    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores, contador):
         self.tipo = tipo
         self.prob_correctos = prob_correctos
         self.prob_fuera_rango = prob_fuera_rango
