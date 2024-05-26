@@ -90,9 +90,22 @@ CLOUD: Socket = {
     'port': 5223,
 }
 
+HealthCheck = TypedDict('HealthCheck', {
+    'host': str,
+    'port_1': int,
+    'port_2': int,
+})
+
+HEALTH_CHECK: HealthCheck = {
+    'host': "192.168.193.126", 
+    'port_1': 5999,
+    'port_2': 5989
+}
+
 MONGODB = {
     'uri': 'mongodb+srv://sophie:hEh3mnqukd9t73Ca@proyectodistribuidos.by5tqz6.mongodb.net/?retryWrites=true&w=majority&appName=ProyectoDistribuidos',
     'database': 'ProyectoDistribuidos',
     'collection_sensor': 'SensorData',
     'collection_calc': 'CalculationData',
+    'collection_alerta': 'AlertData',
 }

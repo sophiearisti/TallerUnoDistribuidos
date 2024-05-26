@@ -23,8 +23,24 @@ class Fog:
 
     def get_color(self, tipo_mensaje):
         return self.colors.get(tipo_mensaje, "")
+    
+    def health(self):
+        context = zmq.Context()
+        sender = context.socket(zmq.REQ)
+        sender.connect(f"tcp://{environment.HEALTH_CHECK['host']}:{environment.HEALTH_CHECK['port_1']}")
+        sender.send_string("Hello :)")
+        sender.recv_string()
+
+        receiver = context.socket(zmq.REP)
+        receiver.bind(f"tcp://{environment.PROXY_SOCKET['host']}:{environment.PROXY_SOCKET['port']}")
+
+        while True:
+            receiver.recv_string()
+            receiver.send_string("yes still alive")
 
     def inicializar(self):
+        threading.Thread(target=self.health).start()
+
         receiver = self.context.socket(zmq.SUB)
         receiver.connect(
             f'tcp://{environment.BROKER_SOCKET["host"]}:{environment.BROKER_SOCKET["pub_port"]}'
@@ -105,9 +121,9 @@ class Fog:
         print(msg_in)
 
     colas_temperaturas = [queue.Queue() for _ in range(environment.CANT_SENSORES)]
-
+    lista_posiciones = [-1] * environment.CANT_SENSORES
     def calcularTemperatura(self, result):
-        sensor_id = result["id"] - 1
+        sensor_id = self.actualizar_lista(result["id"])
         self.colas_temperaturas[sensor_id].put(result)
 
         if all(not q.empty() for q in self.colas_temperaturas):
@@ -127,6 +143,16 @@ class Fog:
                 "TS": timestamp,
             }
             self.enviar_cloud(result)
+
+    def actualizar_lista(self,valor):
+        # Recorrer la lista para encontrar la posición del valor o el primer -1
+        for i in range(len(self.lista_posiciones)):
+            if self.lista_posiciones[i] == valor:
+                return i  # El valor ya está en la lista, devolver la posición
+            if self.lista_posiciones[i] == -1:
+                self.lista_posiciones[i] = valor  # Encontró un -1, asignar el valor
+                return i  # Devolver la posición donde se asignó el nuevo valor
+        return -1  # Si la lista está llena y no se encontró lugar, devolver -1
 
     sumatoriahumedad = 0
 
@@ -151,6 +177,23 @@ class Fog:
             senderCloud_promedio.send_json(result)
             msg_in = senderCloud_promedio.recv_string()
             print(msg_in)
+
+            if(valor>environment.MAX_HUMEDAD):
+                alerta = {
+                    "tipo_mensaje": "Alerta",
+                    "valor": valor,
+                    "TS": timestamp,
+                }
+                senderCloud_promedio.send_json(alerta)
+                msg_in = senderCloud_promedio.recv_string()
+                print(msg_in)
+                self.senderSC.connect(
+            f"tcp://{environment.SC_FOG['host']}:{environment.SC_FOG['port']}"
+        )
+                msg = f"Alarma promedio humedad: {valor} por encima del valor maximo"
+                self.senderSC.send_string(msg)
+                msg_in = self.senderSC.recv_string()
+                print(msg_in)
 
 
 def main():
