@@ -16,8 +16,8 @@ class SensorHumo(Sensor):
     min = environment.MIN_HUMO
     tiempo = environment.TIEMPO_HUMO
 
-    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
-        super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores)
+    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores, contador):
+        super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores, contador) # type: ignore
         self.context_aspersor = zmq.Context()
         self.sender_aspersor = self.context_aspersor.socket(zmq.REQ)
 

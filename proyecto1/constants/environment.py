@@ -1,4 +1,5 @@
 from typing import TypedDict
+
 CANT_SENSORES = 10
 SENSOR_PORT = 5001
 SENSOR_HUMO = "humo"
@@ -90,9 +91,8 @@ CLOUD: Socket = {
 }
 
 MONGODB = {
-    'uri': 'mongodb+srv://saristizabal1017:2ieC9pQ5Y1913x56@distribuidos.eguzenz.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true',
-    'database': 'distribuidos',
+    'uri': 'mongodb+srv://sophie:hEh3mnqukd9t73Ca@proyectodistribuidos.by5tqz6.mongodb.net/?retryWrites=true&w=majority&appName=ProyectoDistribuidos',
+    'database': 'ProyectoDistribuidos',
     'collection_sensor': 'SensorData',
-    'collection_calculation': 'CalculationData',
-    'collection_alert': 'AlertData',
+    'collection_calc': 'CalculationData',
 }

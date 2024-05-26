@@ -2,15 +2,12 @@ from abc import ABC, abstractmethod
 import zmq
 
 class Sensor:
-    id_Contador = 0
-    
-    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
+    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores,contador):
         self.tipo = tipo
         self.prob_correctos = prob_correctos
         self.prob_fuera_rango = prob_fuera_rango
         self.prob_errores = prob_errores
-        Sensor.id_Contador += 1
-        self.pid = Sensor.id_Contador
+        self.pid = contador
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
         self.senderSC = self.context.socket(zmq.REQ)

@@ -13,8 +13,8 @@ class SensorHumedad(Sensor):
     min = environment.MIN_HUMEDAD
     tiempo = environment.TIEMPO_HUMEDAD
 
-    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores):
-        super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores)
+    def __init__(self, tipo, prob_correctos, prob_fuera_rango, prob_errores,contador):
+        super().__init__(tipo, prob_correctos, prob_fuera_rango, prob_errores,contador) # type: ignore
 
     def obtenerMuestra(self):
         probability = random.random()
