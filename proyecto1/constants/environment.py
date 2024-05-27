@@ -116,4 +116,5 @@ MONGODB = {
     "collection_sensor": "SensorData",
     "collection_calc": "CalculationData",
     "collection_alerta": "AlertData",
+    "collection_time": "TimeData",
 }
