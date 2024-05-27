@@ -44,7 +44,7 @@ class Cloud:
         # Obtener el timestamp actual
         timestamp_actual = datetime.timestamp(datetime.now())
         # Restar el timestamp almacenado en informacion["TS"] al timestamp actual
-        diferencia_tiempo = timestamp_actual - informacion["TS"]
+        diferencia_tiempo = timestamp_actual - informacion["TS_FOG"]
         result = {
                 "demora": diferencia_tiempo,
         }
@@ -73,6 +73,7 @@ class Cloud:
                 "tipo_mensaje": "Humedad_general",
                 "valor": valor,
                 "TS": timestamp,
+                "TS_FOG":timestamp,
             }
             print(f"humedad general {result}")
             result["TS"] = datetime.fromtimestamp(result["TS"])
@@ -83,6 +84,7 @@ class Cloud:
                     "tipo_mensaje": "Alerta",
                     "valor": valor,
                     "TS": timestamp,
+                    "TS_FOG":timestamp,
                 }
                 alerta["TS"] = datetime.fromtimestamp(alerta["TS"])
                 self.collection_alerta.insert_one(alerta)
