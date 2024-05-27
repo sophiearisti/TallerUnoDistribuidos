@@ -2,6 +2,7 @@ import threading
 from SensorHumo import SensorHumo
 from SensorHumedad  import SensorHumedad
 from SensorTemperatura  import SensorTemperatura
+from SensorErroneo  import SensorErroneo
 from sensor import Sensor
 from constants import environment
 
@@ -22,6 +23,11 @@ def start():
         thread = threading.Thread(target=create_sensor, args=(environment.SENSOR_HUMO, environment.ARCHIVO_HUMO))
         thread.start()
 
+    #SENSOR ERRONEO
+    for _ in range(environment.CANT_SENSORES):
+        thread = threading.Thread(target=create_sensor, args=("HOLA", environment.ARCHIVO_HUMO))
+        thread.start()
+
 def create_sensor(nombre, archivo):
     global contador  # Indicar que se usará la variable global 'contador'
     prob_correctos, prob_fuera_rango, prob_errores = leerArchivo(archivo)
@@ -33,8 +39,11 @@ def create_sensor(nombre, archivo):
     elif nombre == environment.SENSOR_HUMEDAD:
         sensor = SensorHumedad(nombre, prob_correctos, prob_fuera_rango, prob_errores, contador)
         sensor.generarValores()
-    else:
+    elif  nombre == environment.SENSOR_TEMPERATURA:
         sensor = SensorTemperatura(nombre, prob_correctos, prob_fuera_rango, prob_errores, contador)
+        sensor.generarValores()
+    else:
+        sensor = SensorErroneo(nombre, prob_correctos, prob_fuera_rango, prob_errores, contador)
         sensor.generarValores()
 
 def leerArchivo(nombre_archivo):

@@ -68,7 +68,7 @@ class Cloud:
             print(f"humedad general {result}")
             result["TS"] = datetime.fromtimestamp(result["TS"])
             self.collection_temperatura.insert_one(result)
-
+            self.sumatoriahumedad =0
             if valor > environment.MAX_HUMEDAD:
                 alerta = {
                     "tipo_mensaje": "Alerta",
