@@ -116,6 +116,8 @@ class Fog:
         self.senderCloud.connect(
             f"tcp://{environment.CLOUD['host']}:{environment.CLOUD['port']}"
         )
+        #ANADIR UN NUEVO DATO
+        mensaje["TS_FOG"] = time.time()
         self.senderCloud.send_json(mensaje)
         msg_in = self.senderCloud.recv_string()
         print(msg_in)
@@ -141,6 +143,7 @@ class Fog:
                 "tipo_mensaje": "Temperatura",
                 "valor": promedio,
                 "TS": timestamp,
+                "TS_FOG":timestamp,
             }
             self.enviar_cloud(result)
 
@@ -170,6 +173,7 @@ class Fog:
                 "tipo_mensaje": "Humedad",
                 "valor": valor,
                 "TS": timestamp,
+                "TS_FOG":timestamp,
             }
             self.sumatoriahumedad = 0
             senderCloud_promedio.connect(
@@ -183,6 +187,7 @@ class Fog:
                     "tipo_mensaje": "Alerta",
                     "valor": valor,
                     "TS": timestamp,
+                    "TS_FOG":timestamp,
                 }
                 senderCloud_promedio.send_json(alerta)
                 msg_in = senderCloud_promedio.recv_string()
