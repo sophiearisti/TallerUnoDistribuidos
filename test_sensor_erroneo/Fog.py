@@ -75,10 +75,9 @@ class Fog:
                     self.calcularTemperatura(result)
                 elif result["tipo_sensor"] == "humedad":
                     self.calcularHumedad(result)
+                    self.enviar_cloud(result)
             else:
                 print("VALORES INCORRECTOS")
-
-            self.enviar_cloud(result)
 
     def validar(self, result):
         tipo_sensor = result["tipo_sensor"]

@@ -24,7 +24,7 @@ TIEMPO_HUMEDAD = 5
 
 MAX_TEMPERATURA = 29.4
 MIN_TEMPERATURA = 11
-TIEMPO_TEMPERATURA = 6
+TIEMPO_TEMPERATURA = 4
 
 HealthCheckSocket = TypedDict('HealthCheckSocket', {
     'host': str,
@@ -108,4 +108,5 @@ MONGODB = {
     'collection_sensor': 'SensorData',
     'collection_calc': 'CalculationData',
     'collection_alerta': 'AlertData',
+    "collection_time": "TimeData",
 }
