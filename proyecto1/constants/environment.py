@@ -51,7 +51,7 @@ PROXY_SOCKET: Socket = {
 
 # para el fog BACK UP
 PROXY_BACKUP_SOCKET: Socket = {
-    "host": "",
+    "host": "192.168.193.079",
     "port": 5001,
 }
 
@@ -65,7 +65,7 @@ BrokerSocket = TypedDict(
     },
 )
 BROKER_SOCKET: BrokerSocket = {
-    "host": "192.168.193.126",
+    "host": "192.168.193.127",
     "sub_port": 5006,
     "pub_port": 5086,
 }
@@ -73,13 +73,13 @@ BROKER_SOCKET: BrokerSocket = {
 
 # para el aspersor
 ASPERSOR: Socket = {
-    "host": "192.168.193.126",
+    "host": "192.168.193.127",
     "port": 5011,
 }
 
 # para el SC
 SC_EDGE: Socket = {
-    "host": "192.168.193.126",
+    "host": "192.168.193.127",
     "port": 5091,
 }
 
@@ -90,12 +90,12 @@ SC_FOG: Socket = {
 }
 
 SC_CLOUD: Socket = {
-    "host": "192.168.193.126",
+    "host": "192.168.193.148",
     "port": 5093,
 }
 
 CLOUD: Socket = {
-    "host": "192.168.193.126",
+    "host": "192.168.193.148",
     "port": 5223,
 }
 
