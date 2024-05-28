@@ -51,7 +51,7 @@ PROXY_SOCKET: Socket = {
 
 # para el fog BACK UP
 PROXY_BACKUP_SOCKET: Socket = {
-    "host": "192.168.193.079",
+    "host": "192.168.193.79",
     "port": 5001,
 }
 
